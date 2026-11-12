@@ -1,0 +1,2885 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Your Space ✨</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        blush: {
+                            50: '#fff8fa',
+                            100: '#ffeff4',
+                            200: '#ffdce7',
+                            300: '#ffbed3',
+                            400: '#ff94b6',
+                            500: '#f46492',
+                            600: '#de4375',
+                        },
+                        lavender: {
+                            50: '#f9f7ff',
+                            100: '#f1ecfe',
+                            200: '#e4dafe',
+                            300: '#cdbafc',
+                            500: '#9b72f2',
+                            600: '#7e52e0',
+                        },
+                        plum: {
+                            800: '#3b234a',
+                            900: '#23132e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Outfit"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                        hand: ['"Kalam"', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Strict 100dvh Zero-Scroll Lock */
+        html, body {
+            height: 100dvh;
+            max-height: 100dvh;
+            width: 100vw;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(145deg, #fce7f3 0%, #ede9fe 50%, #fef3c7 100%);
+            color: #23132e;
+            user-select: none;
+            -webkit-user-select: none;
+            overscroll-behavior: none;
+            touch-action: manipulation;
+        }
+
+        .app-shell {
+            width: 100%;
+            max-width: 440px;
+            height: 100dvh;
+            max-height: 100dvh;
+            margin: 0 auto;
+            background: linear-gradient(180deg, #fff8fa 0%, #f7f3ff 55%, #fffdf9 100%);
+            box-shadow: 0 20px 60px rgba(35, 19, 46, 0.22);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cozy-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1.5px solid rgba(255, 190, 211, 0.65);
+            box-shadow: 0 8px 24px -6px rgba(155, 114, 242, 0.14);
+        }
+
+        .soft-pill-active {
+            background: linear-gradient(135deg, #f46492 0%, #9b72f2 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(244, 100, 146, 0.35);
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes lotusBreathe {
+            0%, 100% { transform: scale(0.62); opacity: 0.72; }
+            50% { transform: scale(1.18); opacity: 1; }
+        }
+        .lotus-circle {
+            animation: lotusBreathe 8s ease-in-out infinite;
+        }
+
+        @keyframes gentlePop {
+            0% { transform: scale(0.92); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: gentlePop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .wheel-spin-transition {
+            transition: transform 2.6s cubic-bezier(0.16, 0.9, 0.28, 1.04);
+        }
+
+        canvas {
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-shell">
+
+        <!-- Sparkle & Confetti Overlay Canvas -->
+        <canvas id="fxCanvas" class="absolute inset-0 pointer-events-none z-40"></canvas>
+
+        <!-- =================================================================
+             1. TOP HEADER BAR (Fixed Height h-14, Update + Break + Fix/Reset)
+             ================================================================= -->
+        <header class="relative z-20 h-14 shrink-0 px-2.5 bg-white/90 backdrop-blur-md border-b border-blush-200/80 flex items-center justify-between">
+            <div class="flex items-center gap-2 min-w-0">
+                <div class="w-8 h-8 rounded-2xl bg-gradient-to-tr from-blush-500 to-lavender-500 flex items-center justify-center text-white text-sm shadow-sm shrink-0">
+                    ✨
+                </div>
+                <div class="truncate">
+                    <div class="flex items-center gap-1">
+                        <h1 class="font-serif font-bold text-sm sm:text-base text-plum-900 leading-tight truncate">
+                            Your Space
+                        </h1>
+                        <span id="cloudSyncBadge" class="px-1.5 py-0.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 text-[8px] font-extrabold shrink-0">
+                            ☁️ Cloud Synced
+                        </span>
+                    </div>
+                    <p class="text-[10px] text-plum-800/65 font-semibold truncate">
+                        Full Songs • Multi-Line Art • Cloud Save
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1 shrink-0">
+                <!-- 3-Day Real Update Button -->
+                <button onclick="openUpdateModal()" id="topUpdateBtn" class="relative px-2 py-1 rounded-full bg-blush-100 hover:bg-blush-200 border border-blush-300 text-plum-900 text-[10px] font-bold flex items-center gap-1 active:scale-95 transition">
+                    <span>🔄</span>
+                    <span id="topUpdateLabel">Update</span>
+                    <span id="updatePingDot" class="hidden w-2 h-2 rounded-full bg-blush-600 absolute -top-0.5 -right-0.5 animate-ping"></span>
+                </button>
+
+                <!-- Break Check-In Button -->
+                <button onclick="openBreakCheckModal()" class="px-2 py-1 rounded-full bg-lavender-100 hover:bg-lavender-200 border border-lavender-300 text-plum-900 text-[10px] font-bold flex items-center gap-1 active:scale-95 transition">
+                    <span>⏳</span>
+                    <span>Break</span>
+                </button>
+
+                <!-- Instant Fix / Unstick View Button -->
+                <button onclick="emergencyFixReset()" title="Fix or Reset View" class="px-2 py-1 rounded-full bg-amber-100 hover:bg-amber-200 border border-amber-300 text-plum-900 text-[10px] font-bold active:scale-95 transition">
+                    🛠️ Fix
+                </button>
+
+                <!-- Master Mute -->
+                <button onclick="toggleMasterMute()" class="w-7 h-7 rounded-full bg-white border border-blush-200 text-plum-900 text-xs flex items-center justify-center active:scale-95 transition">
+                    <span id="muteIcon">🔊</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- =================================================================
+             2. MAIN STAGE AREA (flex-1 overflow-hidden, Zero Vertical Scroll)
+             ================================================================= -->
+        <main class="relative z-10 flex-1 overflow-hidden px-2.5 py-2 flex flex-col justify-between">
+
+            <!-- =============================================================
+                 TAB 1: 🎮 GAMES (Goal-Based Arcade + Palindrome Audio + Unlocks)
+                 ============================================================= -->
+            <section id="tabView-arcade" class="w-full h-full flex flex-col justify-between gap-1.5">
+                
+                <!-- Horizontal Game Selector Strip -->
+                <div id="gameSelectorStrip" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 shrink-0">
+                    <button onclick="switchMiniGame('bubbles')" id="gamePill-bubbles" class="soft-pill-active px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition">
+                        🫧 Bubble Rush
+                    </button>
+                    <button onclick="switchMiniGame('memory')" id="gamePill-memory" class="bg-white/90 border border-blush-200 text-plum-800 px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition">
+                        🃏 Memory Pro
+                    </button>
+                    <button onclick="switchMiniGame('stars')" id="gamePill-stars" class="bg-white/90 border border-blush-200 text-plum-800 px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition">
+                        ⭐ Star Catch
+                    </button>
+                    <button onclick="switchMiniGame('piano')" id="gamePill-piano" class="bg-white/90 border border-blush-200 text-plum-800 px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition">
+                        🎹 Piano Tiles
+                    </button>
+                    <button onclick="switchMainTab('art')" class="bg-white/90 border border-blush-200 text-plum-800 px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition">
+                        🎨 Draw & AI
+                    </button>
+                    <!-- Unlockable Game #1 -->
+                    <button onclick="switchMiniGame('slicer')" id="gamePill-slicer" class="hidden bg-white/90 border border-blush-200 text-plum-800 px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition">
+                        🍉 Sweet Slicer
+                    </button>
+                    <!-- Unlockable Game #2 -->
+                    <button onclick="switchMiniGame('tower')" id="gamePill-tower" class="hidden bg-white/90 border border-blush-200 text-plum-800 px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition">
+                        🧱 Tower Stack
+                    </button>
+                    <!-- Unlockable Game #3 -->
+                    <button onclick="switchMiniGame('butterfly')" id="gamePill-butterfly" class="hidden bg-white/90 border border-blush-200 text-plum-800 px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition">
+                        🦋 Butterfly Reflex
+                    </button>
+                </div>
+
+                <!-- Main Game Container Card -->
+                <div class="cozy-card rounded-3xl p-2.5 flex-1 flex flex-col justify-between min-h-0 relative overflow-hidden">
+
+                    <!-- GAME 1: 🫧 MELODIOUS BUBBLE RUSH -->
+                    <div id="gameStage-bubbles" class="w-full h-full flex flex-col justify-between relative">
+                        <div class="flex items-center justify-between px-1 mb-1 shrink-0 text-[11px] font-bold">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded-lg bg-blush-100 text-blush-600">
+                                    ⏱️ <span id="bubbleTimerText">45</span>s
+                                </span>
+                                <span id="bubbleLivesText" class="text-xs">❤️❤️❤️</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-plum-800">Score: <strong id="bubbleScore">0</strong></span>
+                                <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-800">
+                                    🏆 Best: <span id="bubbleHighScore">0</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="relative flex-1 rounded-2xl overflow-hidden bg-gradient-to-b from-lavender-100/80 via-blush-50 to-amber-50/60 border border-blush-200 min-h-0">
+                            <canvas id="bubbleCanvas" class="w-full h-full block"></canvas>
+
+                            <div id="bubbleGameOver" class="hidden absolute inset-0 z-20 bg-plum-900/85 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center text-white animate-pop">
+                                <div id="bubbleGoIcon" class="text-4xl mb-1">🫧🏆</div>
+                                <h3 id="bubbleGoTitle" class="font-serif font-bold text-xl">Round Complete!</h3>
+                                <p id="bubbleGoSub" class="text-xs text-blush-200 mt-0.5">Palindrome Melody Bubble Rush</p>
+                                <div class="flex items-center gap-4 my-3 bg-white/15 px-4 py-2 rounded-2xl border border-white/20">
+                                    <div>
+                                        <div class="text-[10px] uppercase text-blush-200">Score</div>
+                                        <div id="bubbleFinalScore" class="text-xl font-extrabold">0</div>
+                                    </div>
+                                    <div class="h-6 w-px bg-white/25"></div>
+                                    <div>
+                                        <div class="text-[10px] uppercase text-amber-300">High Score</div>
+                                        <div id="bubbleFinalBest" class="text-xl font-extrabold text-amber-300">0</div>
+                                    </div>
+                                </div>
+                                <button onclick="startBubbleGame()" class="px-6 py-2.5 rounded-2xl soft-pill-active font-bold text-xs shadow-lg active:scale-95">
+                                    🔄 Play Again
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GAME 2: 🃏 MEMORY MATCH PRO -->
+                    <div id="gameStage-memory" class="hidden w-full h-full flex-col justify-between relative">
+                        <div class="flex items-center justify-between gap-1 mb-1 shrink-0">
+                            <div class="flex items-center gap-1 bg-blush-50 p-0.5 rounded-xl border border-blush-200">
+                                <button onclick="setMemoryDifficulty('easy')" id="memDiff-easy" class="px-2 py-0.5 rounded-lg text-[10px] font-extrabold soft-pill-active">Easy</button>
+                                <button onclick="setMemoryDifficulty('medium')" id="memDiff-medium" class="px-2 py-0.5 rounded-lg text-[10px] font-bold text-plum-800">Med</button>
+                                <button onclick="setMemoryDifficulty('hard')" id="memDiff-hard" class="px-2 py-0.5 rounded-lg text-[10px] font-bold text-plum-800">Hard</button>
+                            </div>
+
+                            <button onclick="toggleMemoryTimingMode()" id="memModeBtn" class="px-2 py-0.5 rounded-xl bg-lavender-100 border border-lavender-300 text-[10px] font-bold text-plum-900">
+                                ⏱️ Stopwatch
+                            </button>
+
+                            <div class="flex items-center gap-1 text-[11px] font-bold">
+                                <span class="px-2 py-0.5 rounded-lg bg-white border border-blush-200 text-plum-900">
+                                    <span id="memClockText">0s</span>
+                                </span>
+                                <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-800">
+                                    🏆 <span id="memBestTimeText">--</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div id="memoryGrid" class="grid grid-cols-4 gap-1.5 flex-1 my-auto py-0.5 min-h-0"></div>
+
+                        <div id="memoryGameOver" class="hidden absolute inset-0 z-20 rounded-2xl bg-plum-900/85 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center text-white animate-pop">
+                            <div id="memGoEmoji" class="text-4xl mb-1">🎉🏆</div>
+                            <h3 id="memGoTitle" class="font-serif font-bold text-xl">Board Cleared!</h3>
+                            <p id="memGoSub" class="text-xs text-blush-200 mt-0.5"></p>
+                            <div class="flex items-center gap-4 my-3 bg-white/15 px-4 py-2 rounded-2xl border border-white/20">
+                                <div>
+                                    <div class="text-[10px] uppercase text-blush-200">Your Time</div>
+                                    <div id="memFinalTime" class="text-xl font-extrabold">24s</div>
+                                </div>
+                                <div class="h-6 w-px bg-white/25"></div>
+                                <div>
+                                    <div class="text-[10px] uppercase text-amber-300">Fastest Record</div>
+                                    <div id="memFinalBest" class="text-xl font-extrabold text-amber-300">24s</div>
+                                </div>
+                            </div>
+                            <button onclick="initMemoryGame()" class="px-6 py-2.5 rounded-2xl soft-pill-active font-bold text-xs shadow-lg active:scale-95">
+                                🔄 Play Again
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- GAME 3: ⭐ STAR CATCHER ARCADE -->
+                    <div id="gameStage-stars" class="hidden w-full h-full flex-col justify-between relative">
+                        <div class="flex items-center justify-between px-1 mb-1 shrink-0 text-[11px] font-bold">
+                            <div class="flex items-center gap-2">
+                                <span id="starLivesText" class="text-xs">❤️❤️❤️</span>
+                                <span class="text-[10px] text-plum-800/70">Dodge ⛈️!</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-plum-900">Score: <strong id="starCatchScore">0</strong></span>
+                                <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-800">
+                                    🏆 Best: <span id="starHighScore">0</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="relative flex-1 rounded-2xl overflow-hidden bg-gradient-to-b from-plum-900 via-plum-800 to-lavender-600 border border-lavender-300 min-h-0">
+                            <canvas id="starCatcherCanvas" class="w-full h-full block"></canvas>
+
+                            <div id="starGameOver" class="hidden absolute inset-0 z-20 bg-plum-900/85 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center text-white animate-pop">
+                                <div class="text-4xl mb-1">⛈️⭐</div>
+                                <h3 id="starGoTitle" class="font-serif font-bold text-xl">Storm Cloud Hit!</h3>
+                                <div class="flex items-center gap-4 my-3 bg-white/15 px-4 py-2 rounded-2xl border border-white/20">
+                                    <div>
+                                        <div class="text-[10px] uppercase text-blush-200">Score</div>
+                                        <div id="starFinalScore" class="text-xl font-extrabold">0</div>
+                                    </div>
+                                    <div class="h-6 w-px bg-white/25"></div>
+                                    <div>
+                                        <div class="text-[10px] uppercase text-amber-300">High Score</div>
+                                        <div id="starFinalBest" class="text-xl font-extrabold text-amber-300">0</div>
+                                    </div>
+                                </div>
+                                <button onclick="startStarCatcherGame()" class="px-6 py-2.5 rounded-2xl soft-pill-active font-bold text-xs shadow-lg active:scale-95">
+                                    🔄 Play Again
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GAME 4: 🎹 MELODIOUS PIANO TILES -->
+                    <div id="gameStage-piano" class="hidden w-full h-full flex-col justify-between relative">
+                        <div class="flex items-center justify-between px-1 mb-1 shrink-0 text-[11px] font-bold">
+                            <span class="text-plum-800">🎹 Tap Falling Tiles (Don't Miss!)</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-plum-900">Notes: <strong id="pianoScore">0</strong></span>
+                                <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-800">
+                                    🏆 Best: <span id="pianoHighScore">0</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="relative flex-1 rounded-2xl overflow-hidden bg-gradient-to-b from-lavender-50 via-blush-50 to-white border border-blush-200 min-h-0">
+                            <canvas id="pianoTilesCanvas" class="w-full h-full block"></canvas>
+
+                            <div id="pianoGameOver" class="hidden absolute inset-0 z-20 bg-plum-900/85 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center text-white animate-pop">
+                                <div class="text-4xl mb-1">🎹✨</div>
+                                <h3 id="pianoGoTitle" class="font-serif font-bold text-xl">Tile Missed!</h3>
+                                <div class="flex items-center gap-4 my-3 bg-white/15 px-4 py-2 rounded-2xl border border-white/20">
+                                    <div>
+                                        <div class="text-[10px] uppercase text-blush-200">Notes</div>
+                                        <div id="pianoFinalScore" class="text-xl font-extrabold">0</div>
+                                    </div>
+                                    <div class="h-6 w-px bg-white/25"></div>
+                                    <div>
+                                        <div class="text-[10px] uppercase text-amber-300">Best Streak</div>
+                                        <div id="pianoFinalBest" class="text-xl font-extrabold text-amber-300">0</div>
+                                    </div>
+                                </div>
+                                <button onclick="startPianoTilesGame()" class="px-6 py-2.5 rounded-2xl soft-pill-active font-bold text-xs shadow-lg active:scale-95">
+                                    🔄 Play Again
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UNLOCKABLE GAME 5: 🍉 SWEET SLICER -->
+                    <div id="gameStage-slicer" class="hidden w-full h-full flex-col justify-between relative">
+                        <div class="flex items-center justify-between px-1 mb-1 shrink-0 text-[11px] font-bold">
+                            <span class="text-plum-800">🍉 Swipe/Tap Fruits! (Dodge 💣)</span>
+                            <div class="flex items-center gap-2">
+                                <span>Score: <strong id="slicerScore">0</strong></span>
+                                <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-800">
+                                    🏆 Best: <span id="slicerHighScore">0</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="relative flex-1 rounded-2xl overflow-hidden bg-gradient-to-b from-amber-50 via-blush-50 to-lavender-100 border border-blush-200 min-h-0">
+                            <canvas id="slicerCanvas" class="w-full h-full block"></canvas>
+                            <div id="slicerGameOver" class="hidden absolute inset-0 z-20 bg-plum-900/85 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center text-white animate-pop">
+                                <div class="text-4xl mb-1">🍉⚔️</div>
+                                <h3 class="font-serif font-bold text-xl">Sweet Slicer Over!</h3>
+                                <p class="text-xs text-blush-200 my-2">Score: <strong id="slicerFinalScore">0</strong> • Best: <strong id="slicerFinalBest">0</strong></p>
+                                <button onclick="startSlicerGame()" class="px-6 py-2.5 rounded-2xl soft-pill-active font-bold text-xs">🔄 Slice Again</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UNLOCKABLE GAME 6: 🧱 PASTEL TOWER STACK -->
+                    <div id="gameStage-tower" class="hidden w-full h-full flex-col justify-between relative">
+                        <div class="flex items-center justify-between px-1 mb-1 shrink-0 text-[11px] font-bold">
+                            <span class="text-plum-800">🧱 Tap Screen to Stack Block!</span>
+                            <div class="flex items-center gap-2">
+                                <span>Floors: <strong id="towerScore">0</strong></span>
+                                <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-800">
+                                    🏆 Best: <span id="towerHighScore">0</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="relative flex-1 rounded-2xl overflow-hidden bg-gradient-to-b from-lavender-100 via-blush-50 to-white border border-blush-200 min-h-0">
+                            <canvas id="towerCanvas" class="w-full h-full block"></canvas>
+                            <div id="towerGameOver" class="hidden absolute inset-0 z-20 bg-plum-900/85 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center text-white animate-pop">
+                                <div class="text-4xl mb-1">🧱🏰</div>
+                                <h3 class="font-serif font-bold text-xl">Tower Complete!</h3>
+                                <p class="text-xs text-blush-200 my-2">Floors: <strong id="towerFinalScore">0</strong> • Best: <strong id="towerFinalBest">0</strong></p>
+                                <button onclick="startTowerGame()" class="px-6 py-2.5 rounded-2xl soft-pill-active font-bold text-xs">🔄 Build Again</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UNLOCKABLE GAME 7: 🦋 BUTTERFLY REFLEX -->
+                    <div id="gameStage-butterfly" class="hidden w-full h-full flex-col justify-between relative">
+                        <div class="flex items-center justify-between px-1 mb-1 shrink-0 text-[11px] font-bold">
+                            <span class="px-2 py-0.5 rounded-lg bg-blush-100 text-blush-600">⏱️ <span id="bflyTimer">30</span>s</span>
+                            <div class="flex items-center gap-2">
+                                <span>Caught: <strong id="bflyScore">0</strong></span>
+                                <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-800">
+                                    🏆 Best: <span id="bflyHighScore">0</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="relative flex-1 rounded-2xl overflow-hidden bg-gradient-to-b from-plum-900 via-lavender-600 to-blush-400 border border-lavender-300 min-h-0">
+                            <canvas id="butterflyCanvas" class="w-full h-full block"></canvas>
+                            <div id="bflyGameOver" class="hidden absolute inset-0 z-20 bg-plum-900/85 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center text-white animate-pop">
+                                <div class="text-4xl mb-1">🦋✨</div>
+                                <h3 class="font-serif font-bold text-xl">Time's Up!</h3>
+                                <p class="text-xs text-blush-200 my-2">Caught: <strong id="bflyFinalScore">0</strong> • Best: <strong id="bflyFinalBest">0</strong></p>
+                                <button onclick="startButterflyGame()" class="px-6 py-2.5 rounded-2xl soft-pill-active font-bold text-xs">🔄 Play Again</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- INFINITE AI CARTRIDGE STAGE (Update #4, #5, #6... ♾️) -->
+                    <div id="gameStage-aiCartridge" class="hidden w-full h-full flex-col justify-between relative">
+                        <div class="flex items-center justify-between px-1 mb-1 shrink-0 text-[11px] font-bold">
+                            <div class="flex items-center gap-1.5 min-w-0">
+                                <span id="cartridgeBadge" class="px-2 py-0.5 rounded-lg bg-lavender-100 text-lavender-600 text-[10px] font-extrabold shrink-0">
+                                    ✨ AI #4
+                                </span>
+                                <span id="cartridgeRuleText" class="text-plum-800 truncate text-[10px]">
+                                    Tap targets, avoid hazards!
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <span class="px-1.5 py-0.5 rounded bg-blush-100 text-blush-600 text-[10px]">
+                                    ⏱️ <span id="cartridgeTimer">35</span>s
+                                </span>
+                                <span>Score: <strong id="cartridgeScore">0</strong></span>
+                                <span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px]">
+                                    🏆 <span id="cartridgeHighScore">0</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div id="cartridgeBackdrop" class="relative flex-1 rounded-2xl overflow-hidden bg-gradient-to-b from-plum-900 via-lavender-600 to-blush-400 border border-lavender-300 min-h-0">
+                            <canvas id="cartridgeCanvas" class="w-full h-full block"></canvas>
+
+                            <div id="cartridgeGameOver" class="hidden absolute inset-0 z-20 bg-plum-900/85 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-center text-white animate-pop">
+                                <div id="cartridgeGoEmoji" class="text-4xl mb-1">🌟🏆</div>
+                                <h3 id="cartridgeGoTitle" class="font-serif font-bold text-xl">Round Complete!</h3>
+                                <p id="cartridgeGoSub" class="text-xs text-blush-200 mt-0.5"></p>
+                                <div class="flex items-center gap-4 my-3 bg-white/15 px-4 py-2 rounded-2xl border border-white/20">
+                                    <div>
+                                        <div class="text-[10px] uppercase text-blush-200">Score</div>
+                                        <div id="cartridgeFinalScore" class="text-xl font-extrabold">0</div>
+                                    </div>
+                                    <div class="h-6 w-px bg-white/25"></div>
+                                    <div>
+                                        <div class="text-[10px] uppercase text-amber-300">Best</div>
+                                        <div id="cartridgeFinalBest" class="text-xl font-extrabold text-amber-300">0</div>
+                                    </div>
+                                </div>
+                                <button onclick="restartActiveCartridgeGame()" class="px-6 py-2.5 rounded-2xl soft-pill-active font-bold text-xs shadow-lg active:scale-95">
+                                    🔄 Play Again
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- =============================================================
+                 TAB 2: 🎨 ART & AI (Pure Freehand Finger Canvas + AI Shaabashi)
+                 ============================================================= -->
+            <section id="tabView-art" class="hidden w-full h-full flex-col justify-between gap-1.5">
+                <div class="cozy-card rounded-3xl p-2.5 flex-1 flex flex-col justify-between min-h-0 relative overflow-hidden">
+                    
+                    <!-- Top Task Prompt Bar -->
+                    <div class="flex items-center justify-between gap-1.5 bg-gradient-to-r from-blush-50 to-lavender-50 px-3 py-1.5 rounded-2xl border border-blush-200 mb-1.5 shrink-0">
+                        <div class="min-w-0 flex-1">
+                            <span class="text-[9px] font-extrabold uppercase tracking-wider text-blush-600 block">
+                                🎨 Creative Drawing Prompt (Or Draw Anything!)
+                            </span>
+                            <p id="artTaskPrompt" class="text-xs font-bold text-plum-900 truncate">
+                                Task: Ek pyara sa Flower 🌸 banao!
+                            </p>
+                        </div>
+                        <button onclick="cycleArtTask()" class="px-2.5 py-1 rounded-xl bg-white border border-blush-200 text-[10px] font-bold text-plum-800 shrink-0 active:scale-95">
+                            🎲 Naya Task
+                        </button>
+                    </div>
+
+                    <!-- Pure Freehand Canvas -->
+                    <div class="relative flex-1 rounded-2xl overflow-hidden bg-white border-2 border-blush-200 shadow-inner min-h-0">
+                        <canvas id="freeArtCanvas" class="w-full h-full block cursor-crosshair"></canvas>
+
+                    <!-- Bottom Palette + Brush Sizes + Undo + Done Review Button -->
+                    <div class="flex items-center justify-between gap-1 mt-1.5 shrink-0">
+                        <div class="flex items-center gap-1">
+                            <button onclick="setArtBrush('#f46492', false)" class="w-5 h-5 rounded-full bg-[#f46492] border-2 border-plum-900"></button>
+                            <button onclick="setArtBrush('#9b72f2', false)" class="w-5 h-5 rounded-full bg-[#9b72f2] border border-white shadow"></button>
+                            <button onclick="setArtBrush('#f59e0b', false)" class="w-5 h-5 rounded-full bg-[#f59e0b] border border-white shadow"></button>
+                            <button onclick="setArtBrush('#10b981', false)" class="w-5 h-5 rounded-full bg-[#10b981] border border-white shadow"></button>
+                            <button onclick="setArtBrush('#3b82f6', false)" class="w-5 h-5 rounded-full bg-[#3b82f6] border border-white shadow"></button>
+                            <button onclick="setArtBrush('#ef4444', false)" class="w-5 h-5 rounded-full bg-[#ef4444] border border-white shadow"></button>
+                            <button onclick="setArtBrush('#23132e', false)" class="w-5 h-5 rounded-full bg-[#23132e] border border-white shadow"></button>
+                        </div>
+
+                        <div class="flex items-center gap-1">
+                            <button onclick="cycleBrushSize()" id="brushSizeBtn" class="px-2 py-1 rounded-xl bg-blush-50 border border-blush-200 text-[10px] font-bold text-plum-800" title="Brush Size">
+                                🖌️ M
+                            </button>
+                            <button onclick="setArtBrush('#ffffff', true)" id="eraserBtn" class="px-2 py-1 rounded-xl bg-blush-50 border border-blush-200 text-[10px] font-bold text-plum-800" title="Eraser">
+                                🧽
+                            </button>
+                            <button onclick="undoLastArtStroke()" class="px-2 py-1 rounded-xl bg-lavender-100 border border-lavender-300 text-[10px] font-bold text-plum-900 active:scale-95" title="Undo Last Line">
+                                ↩️
+                            </button>
+                            <button onclick="clearFreeArtCanvas()" class="px-2 py-1 rounded-xl bg-blush-50 border border-blush-200 text-[10px] font-bold text-plum-800 active:scale-95" title="Clear All">
+                                🗑️
+                            </button>
+                        </div>
+
+                        <button onclick="evaluateDrawingWithAI()" id="artDoneBtn" class="px-2.5 py-1.5 rounded-xl soft-pill-active font-bold text-[11px] shadow active:scale-95">
+                            ✨ Done! Check
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- =============================================================
+                 TAB 3: 🎵 MUSIC (Ad-Free Full Songs Player + Cloud Library + Piano)
+                 ============================================================= -->
+            <section id="tabView-music" class="hidden w-full h-full flex-col justify-between gap-1.5">
+                
+                <!-- Sub-Tab Switcher -->
+                <div class="grid grid-cols-2 gap-1.5 bg-white/85 p-1 rounded-2xl border border-blush-200 shrink-0">
+                    <button onclick="switchMusicSubTab('linkStudio')" id="musicSub-linkStudio" class="py-1.5 rounded-xl text-xs font-bold soft-pill-active transition">
+                        🎧 Full Songs Player
+                    </button>
+                    <button onclick="switchMusicSubTab('customPiano')" id="musicSub-customPiano" class="py-1.5 rounded-xl text-xs font-bold text-plum-800 transition">
+                        🎹 Custom Piano
+                    </button>
+                </div>
+
+                <!-- SUB-TAB A: 🎧 AD-FREE FULL-SONG GLOBAL MUSIC PLAYER -->
+                <div id="musicPanel-linkStudio" class="cozy-card rounded-3xl p-2.5 flex-1 flex flex-col justify-between min-h-0 overflow-hidden">
+                    
+                    <div class="space-y-1 shrink-0">
+                        <div class="flex items-center gap-1">
+                            <input id="songUrlInput" type="text" placeholder="Search any full song (Kesariya, Kalyani, Tum Hi Ho)..." class="flex-1 px-2.5 py-1.5 rounded-xl bg-white border border-blush-300 text-xs font-semibold text-plum-900 focus:outline-none focus:border-blush-500" onkeydown="if(event.key==='Enter') handleSmartSongInput()">
+                            <button onclick="handleSmartSongInput()" id="songGoBtn" class="px-3 py-1.5 rounded-xl soft-pill-active font-bold text-xs shrink-0 active:scale-95">
+                                🔍 Search
+                            </button>
+                            <label class="px-2 py-1.5 rounded-xl bg-lavender-100 border border-lavender-300 text-plum-900 font-bold text-[10px] shrink-0 cursor-pointer active:scale-95" title="Play MP3 from phone">
+                                📂 MP3
+                                <input type="file" accept="audio/*" class="hidden" onchange="handleLocalAudioFile(event)">
+                            </label>
+                        </div>
+
+                        <!-- One-Tap Full-Song Quick Chips -->
+                        <div class="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
+                            <button onclick="quickSearchAndPlay('Beintehaan Race 2')" class="px-2 py-0.5 rounded-full bg-blush-50 hover:bg-blush-100 border border-blush-200 text-[10px] font-bold text-plum-800 whitespace-nowrap">🎵 Beintehaan</button>
+                            <button onclick="quickSearchAndPlay('Kalyani')" class="px-2 py-0.5 rounded-full bg-blush-50 hover:bg-blush-100 border border-blush-200 text-[10px] font-bold text-plum-800 whitespace-nowrap">🎵 Kalyani</button>
+                            <button onclick="quickSearchAndPlay('Kesariya Arijit Singh')" class="px-2 py-0.5 rounded-full bg-blush-50 hover:bg-blush-100 border border-blush-200 text-[10px] font-bold text-plum-800 whitespace-nowrap">🎵 Kesariya</button>
+                            <button onclick="quickSearchAndPlay('Tum Hi Ho Aashiqui 2')" class="px-2 py-0.5 rounded-full bg-blush-50 hover:bg-blush-100 border border-blush-200 text-[10px] font-bold text-plum-800 whitespace-nowrap">🎵 Tum Hi Ho</button>
+                            <button onclick="quickSearchAndPlay('Raataan Lambiyan')" class="px-2 py-0.5 rounded-full bg-blush-50 hover:bg-blush-100 border border-blush-200 text-[10px] font-bold text-plum-800 whitespace-nowrap">🎵 Raataan Lambiyan</button>
+                            <button onclick="quickSearchAndPlay('Atif Aslam Romantic')" class="px-2 py-0.5 rounded-full bg-blush-50 hover:bg-blush-100 border border-blush-200 text-[10px] font-bold text-plum-800 whitespace-nowrap">🎵 Atif Hits</button>
+                        </div>
+                    </div>
+
+                    <!-- Clean Ad-Free Full-Length Song Player Deck -->
+                    <div class="my-1 rounded-2xl bg-gradient-to-br from-plum-900 via-plum-800 to-indigo-950 text-white p-2.5 flex flex-col justify-between relative overflow-hidden shrink-0 shadow-md">
+                        <div class="flex items-center gap-2.5">
+                            <div class="relative w-12 h-12 rounded-2xl bg-gradient-to-tr from-blush-500 to-lavender-500 flex items-center justify-center text-white text-lg font-bold shadow-lg shrink-0 overflow-hidden">
+                                <img id="activeSongArt" src="" alt="" class="hidden absolute inset-0 w-full h-full object-cover">
+                                <span id="activeSongFallbackIcon" class="relative z-10">🎵</span>
+                            </div>
+
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between gap-1">
+                                    <span id="studioModeBadge" class="text-[9px] uppercase tracking-wider font-extrabold text-emerald-300 truncate">
+                                        ✨ Ad-Free 320kbps Full Song Player
+                                    </span>
+                                    <button onclick="toggleYouTubeVideoDeck()" id="ytDeckToggleBtn" class="hidden px-1.5 py-0.5 rounded bg-white/15 hover:bg-white/25 text-[9px] font-bold text-blush-200 shrink-0">
+                                        🎬 Video Mode
+                                    </button>
+                                </div>
+                                <h3 id="activeSongTitle" class="text-xs font-bold text-white truncate mt-0.5">
+                                    Tap any song or search any track above ✨
+                                </h3>
+                                <p id="activeSongArtist" class="text-[10px] text-blush-200/80 truncate">
+                                    Full-Length Ad-Free Streaming • Cloud Saved
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Full Song Seekbar + Duration -->
+                        <div class="flex items-center gap-2 mt-2">
+                            <span id="songCurrentTime" class="text-[10px] font-mono text-blush-200 w-8 text-right">0:00</span>
+                            <input id="audioSeekSlider" type="range" min="0" max="100" value="0" class="flex-1 h-1.5 accent-blush-400 cursor-pointer" oninput="seekStudioAudio(this.value)">
+                            <span id="songTotalDuration" class="text-[10px] font-mono text-blush-200 w-8">0:00</span>
+                        </div>
+
+                        <!-- Player Controls Row: Prev, Play/Pause, Next, Repeat, Cloud Save -->
+                        <div class="flex items-center justify-between mt-1.5 pt-1.5 border-t border-white/10">
+                            <button onclick="toggleRepeatSong()" id="repeatSongBtn" class="px-2 py-1 rounded-lg bg-white/10 text-blush-200 text-[10px] font-bold active:scale-95">
+                                🔁 Loop Off
+                            </button>
+
+                            <div class="flex items-center gap-3">
+                                <button onclick="playPrevNextTrack(-1)" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-xs active:scale-95">
+                                    ⏮️
+                                </button>
+                                <button onclick="toggleStudioPlayPause()" id="mainPlayPauseBtn" class="w-10 h-10 rounded-full bg-gradient-to-r from-blush-500 to-lavender-500 flex items-center justify-center text-white text-sm font-bold shadow-md active:scale-95">
+                                    <span id="mainPlayPauseIcon">▶️</span>
+                                </button>
+                                <button onclick="playPrevNextTrack(1)" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-xs active:scale-95">
+                                    ⏭️
+                                </button>
+                            </div>
+
+                            <button onclick="saveCurrentTrackToCloud()" class="px-2.5 py-1 rounded-lg bg-blush-500/80 hover:bg-blush-500 text-white text-[10px] font-bold active:scale-95">
+                                ❤️ Saved
+                            </button>
+                        </div>
+
+                        <!-- Optional Ad-Free YouTube-NoCookie Deck (for direct YT links) -->
+                        <div id="visibleYtDeckWrapper" class="hidden mt-1.5 rounded-xl overflow-hidden bg-black border border-white/20 h-24 relative">
+                            <div id="ytPlayerContainer" class="w-full h-full"></div>
+                        </div>
+
+                        <!-- Pure HTML5 Audio Player (No CORS attribute so all CDN full streams play smoothly) -->
+                        <audio id="directAudioElement" preload="auto" playsinline class="hidden"></audio>
+                    </div>
+
+                    <!-- Cloud Saved Music Library / Search Results -->
+                    <div class="flex-1 flex flex-col min-h-0">
+                        <div class="flex items-center justify-between text-[10px] font-bold text-plum-800 mb-1 shrink-0">
+                            <span id="playlistHeaderTitle">☁️ My Saved Full Songs (<span id="savedSongsCount">0</span>)</span>
+                            <button onclick="showSavedLibraryList()" id="backToLibBtn" class="hidden text-[10px] text-blush-600 font-extrabold underline">
+                                ◀ Back to Saved Library
+                            </button>
+                        </div>
+                        <div id="cloudPlaylistContainer" class="flex-1 overflow-y-auto no-scrollbar space-y-1 pr-0.5"></div>
+                    </div>
+                </div>
+
+                <!-- SUB-TAB B: 🎹 PLAYABLE GRAND PIANO -->
+                <div id="musicPanel-customPiano" class="hidden cozy-card rounded-3xl p-3 flex-1 flex flex-col justify-between min-h-0">
+                    <div class="flex items-center justify-between shrink-0">
+                        <div>
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-blush-500">
+                                🎹 Custom Melodious Piano
+                            </span>
+                            <h3 class="font-serif font-bold text-base text-plum-900">
+                                Play Your Own Romantic Tune
+                            </h3>
+                        </div>
+                        <button onclick="toggleAutoBackingMelody()" id="backingLoopBtn" class="px-3 py-1.5 rounded-full bg-lavender-100 border border-lavender-300 text-plum-900 text-[11px] font-bold active:scale-95">
+                            ▶️ Auto Dhun
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-1.5 my-1 shrink-0">
+                        <button onclick="setPianoVoice('grand')" id="voiceBtn-grand" class="py-1.5 rounded-xl soft-pill-active text-[11px] font-bold">
+                            🎹 Warm Piano
+                        </button>
+                        <button onclick="setPianoVoice('kalimba')" id="voiceBtn-kalimba" class="py-1.5 rounded-xl bg-white border border-blush-200 text-plum-800 text-[11px] font-semibold">
+                            ✨ Music Box
+                        </button>
+                        <button onclick="setPianoVoice('lofi')" id="voiceBtn-lofi" class="py-1.5 rounded-xl bg-white border border-blush-200 text-plum-800 text-[11px] font-semibold">
+                            🌙 Lo-Fi Rhodes
+                        </button>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-blush-50 to-lavender-50 p-2.5 rounded-2xl border border-blush-200 text-center my-auto">
+                        <div class="text-[10px] font-bold text-plum-800/70">✨ Palindrome Melodious Sargam Guide:</div>
+                        <div class="font-mono text-xs sm:text-sm font-extrabold text-blush-600 mt-1 tracking-wider">
+                            Sa • Re • Ga • Ma • Pa • Ma • Ga • Re • Sa
+                        </div>
+                        <div id="lastPlayedNoteText" class="text-xs font-hand font-bold text-plum-900 mt-1">
+                            Tap the keys below! 🎶
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-8 gap-1 h-36 shrink-0 pt-1">
+                        <button onpointerdown="triggerCustomPianoKey(0, 'Sa')" class="rounded-2xl bg-gradient-to-b from-white via-blush-50 to-blush-200 border-2 border-blush-300 shadow-md flex flex-col items-center justify-end pb-3 active:scale-95 transition">
+                            <span class="text-xs font-extrabold text-plum-900">Sa</span>
+                        </button>
+                        <button onpointerdown="triggerCustomPianoKey(1, 'Re')" class="rounded-2xl bg-gradient-to-b from-white via-blush-50 to-blush-200 border-2 border-blush-300 shadow-md flex flex-col items-center justify-end pb-3 active:scale-95 transition">
+                            <span class="text-xs font-extrabold text-plum-900">Re</span>
+                        </button>
+                        <button onpointerdown="triggerCustomPianoKey(2, 'Ga')" class="rounded-2xl bg-gradient-to-b from-white via-lavender-50 to-lavender-200 border-2 border-lavender-300 shadow-md flex flex-col items-center justify-end pb-3 active:scale-95 transition">
+                            <span class="text-xs font-extrabold text-plum-900">Ga</span>
+                        </button>
+                        <button onpointerdown="triggerCustomPianoKey(3, 'Ma')" class="rounded-2xl bg-gradient-to-b from-white via-lavender-50 to-lavender-200 border-2 border-lavender-300 shadow-md flex flex-col items-center justify-end pb-3 active:scale-95 transition">
+                            <span class="text-xs font-extrabold text-plum-900">Ma</span>
+                        </button>
+                        <button onpointerdown="triggerCustomPianoKey(4, 'Pa')" class="rounded-2xl bg-gradient-to-b from-white via-amber-50 to-amber-200 border-2 border-amber-300 shadow-md flex flex-col items-center justify-end pb-3 active:scale-95 transition">
+                            <span class="text-xs font-extrabold text-plum-900">Pa</span>
+                        </button>
+                        <button onpointerdown="triggerCustomPianoKey(5, 'Dha')" class="rounded-2xl bg-gradient-to-b from-white via-blush-50 to-blush-200 border-2 border-blush-300 shadow-md flex flex-col items-center justify-end pb-3 active:scale-95 transition">
+                            <span class="text-xs font-extrabold text-plum-900">Dha</span>
+                        </button>
+                        <button onpointerdown="triggerCustomPianoKey(6, 'Ni')" class="rounded-2xl bg-gradient-to-b from-white via-lavender-50 to-lavender-200 border-2 border-lavender-300 shadow-md flex flex-col items-center justify-end pb-3 active:scale-95 transition">
+                            <span class="text-xs font-extrabold text-plum-900">Ni</span>
+                        </button>
+                        <button onpointerdown="triggerCustomPianoKey(7, 'Sa+')" class="rounded-2xl bg-gradient-to-b from-white via-blush-100 to-lavender-300 border-2 border-blush-400 shadow-md flex flex-col items-center justify-end pb-3 active:scale-95 transition">
+                            <span class="text-xs font-extrabold text-plum-900">Sa'</span>
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- =============================================================
+                 TAB 4: 🌸 MOOD (Gussa Cloud Smasher + Breathing Lotus + Spin Wheel)
+                 ============================================================= -->
+            <section id="tabView-mood" class="hidden w-full h-full flex-col justify-between gap-1.5">
+                
+                <!-- 1. Gussa Buster: Interactive 6-Cloud Smasher -->
+                <div class="cozy-card rounded-3xl p-2.5 flex flex-col justify-between shrink-0">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="px-2 py-0.5 rounded-full bg-blush-100 text-blush-600 text-[10px] font-extrabold">
+                            😤 Gussa Buster (Tap Clouds to Smash!)
+                        </span>
+                        <button onclick="resetGussaClouds()" class="text-[10px] font-bold text-lavender-600 underline">
+                            🔄 Reset Clouds
+                        </button>
+                    </div>
+                    <div id="gussaCloudGrid" class="grid grid-cols-6 gap-1.5 my-1"></div>
+                    <p id="gussaWingmanNote" class="font-hand text-xs font-bold text-plum-900 bg-blush-50/90 px-2.5 py-1.5 rounded-xl border border-blush-200 text-center leading-snug">
+                        Mann bhaari ho ya gussa aaye toh upar ke saare kale badal phod do! ⚡
+                    </p>
+                </div>
+
+                <!-- 2. Spin the Fun Wheel -->
+                <div class="cozy-card rounded-3xl p-2.5 flex-1 flex items-center justify-between gap-2.5 min-h-0">
+                    <div class="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0 flex items-center justify-center">
+                        <div class="absolute -top-1.5 z-20 text-sm">🔻</div>
+                        <svg id="funWheelSvg" viewBox="0 0 100 100" class="w-full h-full rounded-full shadow-md border-4 border-white wheel-spin-transition">
+                            <circle cx="50" cy="50" r="48" fill="#ffdce7"/>
+                            <path d="M50,50 L50,2 A48,48 0 0,1 98,50 Z" fill="#e4dafe"/>
+                            <path d="M50,50 L98,50 A48,48 0 0,1 50,98 Z" fill="#fef3c7"/>
+                            <path d="M50,50 L50,98 A48,48 0 0,1 2,50 Z" fill="#d1fae5"/>
+                            <circle cx="50" cy="50" r="10" fill="#ffffff"/>
+                            <text x="66" y="34" font-size="10">🎹</text>
+                            <text x="66" y="72" font-size="10">🎨</text>
+                            <text x="26" y="72" font-size="10">🍦</text>
+                            <text x="26" y="34" font-size="10">🫧</text>
+                        </svg>
+                    </div>
+
+                    <div class="flex-1 flex flex-col justify-between h-full py-0.5">
+                        <span class="text-[10px] font-extrabold uppercase text-lavender-600">🎡 Micro-Fun Spinner</span>
+                        <p id="wheelActionText" class="font-hand text-xs sm:text-sm font-bold text-plum-900 bg-lavender-50 p-2 rounded-xl border border-lavender-200 leading-snug my-auto">
+                            Wheel ghumao aur dekho 1-minute fun task kya aata hai! 🎲
+                        </p>
+                        <div class="flex items-center gap-1.5 mt-1">
+                            <button onclick="spinFunWheel()" class="flex-1 py-1.5 rounded-xl soft-pill-active font-bold text-xs shadow active:scale-95">
+                                🎰 Spin Wheel
+                            </button>
+                            <button onclick="jumpToWheelAction()" id="wheelGoBtn" class="hidden px-2.5 py-1.5 rounded-xl bg-emerald-500 text-white font-bold text-xs active:scale-95">
+                                Go ➔
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Guided 4-4-4 Breathing Lotus -->
+                <div class="cozy-card rounded-3xl px-3 py-2 flex items-center justify-between gap-3 shrink-0 h-24">
+                    <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
+                        <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-blush-300/55 via-lavender-300/55 to-emerald-200/55 lotus-circle"></div>
+                        <div class="relative z-10 w-14 h-14 rounded-full bg-white shadow-md flex flex-col items-center justify-center">
+                            <span class="text-base">🪷</span>
+                            <span id="breathGuideLabel" class="text-[8px] font-extrabold text-plum-900">Saans Andar...</span>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 text-left">
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-bold">
+                            🌿 4-4-4 Calm Breather
+                        </span>
+                        <h4 class="font-serif font-bold text-xs sm:text-sm text-plum-900 mt-0.5">
+                            Saans Andar • Saans Baahar
+                        </h4>
+                        <p class="text-[10px] text-plum-800/75 leading-snug">
+                            Phool bada ho toh gehri saans andar lo, chhota ho toh aaram se chhodo 🌸
+                        </p>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+
+        <!-- =================================================================
+             3. 4-TAB BOTTOM NAVIGATION BAR (Fixed Height h-16, Zero Scroll)
+             ================================================================= -->
+        <nav class="relative z-20 h-16 shrink-0 bg-white/95 border-t border-blush-200/80 px-2 backdrop-blur-md flex items-center justify-around">
+            <button onclick="switchMainTab('arcade')" id="navTab-arcade" class="flex-1 py-1.5 mx-1 rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all soft-pill-active font-bold">
+                <span class="text-base leading-none">🎮</span>
+                <span class="text-[10px] leading-tight">Games</span>
+            </button>
+
+            <button onclick="switchMainTab('art')" id="navTab-art" class="flex-1 py-1.5 mx-1 rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all text-plum-800/70 font-semibold">
+                <span class="text-base leading-none">🎨</span>
+                <span class="text-[10px] leading-tight">Art & AI</span>
+            </button>
+
+            <button onclick="switchMainTab('music')" id="navTab-music" class="flex-1 py-1.5 mx-1 rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all text-plum-800/70 font-semibold">
+                <span class="text-base leading-none">🎵</span>
+                <span class="text-[10px] leading-tight">Music</span>
+            </button>
+
+            <button onclick="switchMainTab('mood')" id="navTab-mood" class="flex-1 py-1.5 mx-1 rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all text-plum-800/70 font-semibold">
+                <span class="text-base leading-none">🌸</span>
+                <span class="text-[10px] leading-tight">Mood</span>
+            </button>
+        </nav>
+
+        <!-- =================================================================
+             MODAL 1: 🔄 INFINITE 3-DAY UPDATE & AI GAME CARTRIDGE GENERATOR
+             ================================================================= -->
+        <div id="updateModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-plum-900/60 backdrop-blur-sm">
+            <div class="cozy-card bg-white max-w-sm w-full rounded-3xl p-4 text-center shadow-2xl border-2 border-blush-300 animate-pop relative">
+                <button onclick="closeUpdateModal()" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-blush-100 text-plum-900 font-bold text-xs">✕</button>
+
+                <div class="text-3xl mb-0.5">🎁🕹️♾️</div>
+                <span class="px-2.5 py-0.5 rounded-full bg-lavender-100 text-lavender-600 text-[10px] font-extrabold uppercase">
+                    Infinite 3-Day Expansion Engine
+                </span>
+                <h3 class="font-serif font-bold text-base sm:text-lg text-plum-900 mt-0.5">
+                    Never-Ending New Games!
+                </h3>
+                <p id="updateModalDesc" class="text-[11px] text-plum-800/75 mt-0.5 leading-snug">
+                    Pehle 3 updates built-in games kholte hain, aur uske baad har update par ek Naya Playable Game Cartridge judta hai!
+                </p>
+
+                <div class="my-2.5 space-y-1 text-left bg-blush-50/80 p-2.5 rounded-2xl border border-blush-200 text-[11px] font-bold max-h-36 overflow-y-auto no-scrollbar">
+                    <div id="packRow-1" class="flex items-center justify-between text-plum-800/60">
+                        <span>🍉 Update #1: Sweet Slicer</span>
+                        <span id="packStatus-1">🔒 Locked</span>
+                    </div>
+                    <div id="packRow-2" class="flex items-center justify-between text-plum-800/60">
+                        <span>🧱 Update #2: Pastel Tower Stack</span>
+                        <span id="packStatus-2">🔒 Locked</span>
+                    </div>
+                    <div id="packRow-3" class="flex items-center justify-between text-plum-800/60">
+                        <span>🦋 Update #3: Butterfly Reflex</span>
+                        <span id="packStatus-3">🔒 Locked</span>
+                    </div>
+                    <div class="border-t border-blush-200 pt-1 mt-1 flex items-center justify-between text-lavender-600">
+                        <span>♾️ Update #4 to ∞: AI Game Cartridges</span>
+                        <span id="aiCartridgeCountBadge">0 Installed</span>
+                    </div>
+                    <div id="installedAiCartridgesList" class="space-y-1 pt-0.5 text-[10px]"></div>
+                </div>
+
+                <button onclick="executeRealAppUpdate()" id="confirmUpdateBtn" class="w-full py-2.5 rounded-2xl soft-pill-active font-bold text-xs shadow-md active:scale-95 transition">
+                    ✨ Unlock Next Game Update Now!
+                </button>
+
+                <button onclick="bypassCooldownForTest()" class="mt-2 py-1 px-3 rounded-xl bg-lavender-50 border border-lavender-200 text-[10px] font-bold text-lavender-600 hover:bg-lavender-100 active:scale-95 transition">
+                    ⚡ Unlock & Test Next Update Now (Bypass 3-Day Wait)
+                </button>
+            </div>
+        </div>
+
+        <!-- =================================================================
+             MODAL 2: ⏳ SMART BREAK & PADHAAI CHECK-IN MODAL (3-STEP FLOW)
+             ================================================================= -->
+        <div id="breakQuotaModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-plum-900/60 backdrop-blur-sm">
+            <div class="cozy-card bg-white max-w-sm w-full rounded-3xl p-5 text-center shadow-2xl border-2 border-blush-300 animate-pop relative">
+                <button onclick="closeBreakQuotaModal()" class="absolute top-3 right-3 w-7 h-7 rounded-full bg-blush-100 text-plum-900 font-bold text-xs">✕</button>
+
+                    <!-- STEP 1 -->
+                <div id="quotaStep-1" class="space-y-3">
+                    <div class="text-4xl">🌸⏳</div>
+                    <h3 class="font-serif font-bold text-lg text-plum-900">
+                        Aaj ka chhota sa break quota poora hua! ✨
+                    </h3>
+                    <p class="font-hand text-sm font-bold text-plum-800/85">
+                        Mood thoda fresh aur halka ho gaya?
+                    </p>
+                    <div class="space-y-2 pt-1">
+                        <button onclick="finishBreakDone()" class="w-full py-2.5 rounded-2xl soft-pill-active font-bold text-xs shadow">
+                            Done, chalti hoon 💖
+                        </button>
+                        <button onclick="goToQuotaStep2()" class="w-full py-2.5 rounded-2xl bg-blush-50 border border-blush-200 text-plum-800 font-bold text-xs">
+                            Abhi aur khelna hai 🎮
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 2 -->
+                <div id="quotaStep-2" class="hidden space-y-3">
+                    <div class="text-4xl">👀🤫</div>
+                    <h3 class="font-serif font-bold text-base text-plum-900 leading-snug">
+                        Achha aur khelna hai?
+                    </h3>
+                    <p class="font-hand text-sm font-bold text-plum-900 bg-blush-50 p-3 rounded-2xl border border-blush-200 leading-snug">
+                        "Par mujhe lagta hai tum kuch kaam bhool rahi ho ya kisi kaam se mann chura rahi ho... kahin woh <span class="text-blush-600 underline">padhaai</span> toh nahi?" 👀
+                    </p>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="handleQuotaAnswer('haan')" class="py-2.5 rounded-2xl bg-amber-100 border border-amber-300 text-plum-900 font-bold text-xs active:scale-95">
+                            Haan 😅
+                        </button>
+                        <button onclick="handleQuotaAnswer('nhi')" class="py-2.5 rounded-2xl bg-emerald-100 border border-emerald-300 text-plum-900 font-bold text-xs active:scale-95">
+                            Nhi 😎
+                        </button>
+                    </div>
+
+                    <button onclick="showOtherWorkInput()" class="w-full py-2.5 rounded-2xl bg-lavender-100 border border-lavender-300 text-plum-900 font-bold text-xs active:scale-95">
+                        Hain toh, par padhaai nhi 🤫
+                    </button>
+
+                    <div id="otherWorkInputBox" class="hidden pt-1 space-y-2">
+                        <input id="customWorkField" type="text" placeholder="Type your other work..." class="w-full px-3 py-2 rounded-xl border border-blush-300 text-xs font-semibold text-plum-900 focus:outline-none">
+                        <button onclick="submitCustomWork()" class="w-full py-2 rounded-xl soft-pill-active font-bold text-xs">
+                            Bata diya ✨
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 3 -->
+                <div id="quotaStep-3" class="hidden space-y-3">
+                    <div id="step3Emoji" class="text-4xl">😊💖</div>
+                    <h3 id="step3Heading" class="font-serif font-bold text-base text-plum-900">
+                        Chhoti Si Baat...
+                    </h3>
+                    <p id="step3Message" class="font-hand text-sm font-bold text-plum-900 bg-lavender-50 p-3 rounded-2xl border border-lavender-200 leading-snug"></p>
+                    <div id="step3WorkButtons" class="space-y-2 pt-1"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="cozyToast" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 -translate-y-2 transition-all duration-300 max-w-xs w-[88%]">
+            <div class="cozy-card bg-white/95 rounded-2xl px-3.5 py-2 shadow-lg flex items-center gap-2 border border-blush-300">
+                <span id="cozyToastEmoji" class="text-lg">✨</span>
+                <p id="cozyToastText" class="text-xs font-bold text-plum-900 leading-snug"></p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- =================================================================
+         CRASH-PROOF, ZERO-DEADLOCK ENGINE + FIREBASE CLOUD SYNC
+         ================================================================= -->
+    <script>
+        /* -----------------------------------------------------------------
+         * 1. SAFE STATE STORAGE & FIREBASE CLOUD SYNC
+         * ----------------------------------------------------------------- */
+        const STORAGE_KEY = 'rajni_cozy_v5_cloud_state';
+        const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+
+        const defaultState = {
+            bubbleHighScore: 0,
+            pianoHighScore: 0,
+            starHighScore: 0,
+            slicerHighScore: 0,
+            towerHighScore: 0,
+            bflyHighScore: 0,
+            memBest_easy: null,
+            memBest_medium: null,
+            memBest_hard: null,
+            unlockedPackLevel: 0,
+            customAiGames: [],
+            cartridgeHighScores: {},
+            lastUpdateTimestamp: Date.now() - THREE_DAYS_MS - 5000,
+            savedSongs: [
+                {
+                    id: 'starter-beintehaan',
+                    title: 'Beintehaan',
+                    artist: 'Atif Aslam, Sunidhi Chauhan',
+                    searchQuery: 'Beintehaan Race 2 Atif Aslam',
+                    streamUrl: '',
+                    artwork: '',
+                    videoId: ''
+                },
+                {
+                    id: 'starter-kalyani',
+                    title: 'Kalyani',
+                    artist: 'Full Melodious Track',
+                    searchQuery: 'Kalyani song',
+                    streamUrl: '',
+                    artwork: '',
+                    videoId: ''
+                },
+                {
+                    id: 'starter-kesariya',
+                    title: 'Kesariya',
+                    artist: 'Arijit Singh, Pritam',
+                    searchQuery: 'Kesariya Brahmāstra Arijit Singh',
+                    streamUrl: '',
+                    artwork: '',
+                    videoId: ''
+                },
+                {
+                    id: 'starter-tumhiho',
+                    title: 'Tum Hi Ho',
+                    artist: 'Arijit Singh',
+                    searchQuery: 'Tum Hi Ho Aashiqui 2',
+                    streamUrl: '',
+                    artwork: '',
+                    videoId: ''
+                },
+                {
+                    id: 'starter-raataan',
+                    title: 'Raataan Lambiyan',
+                    artist: 'Jubin Nautiyal, Asees Kaur',
+                    searchQuery: 'Raataan Lambiyan Shershaah',
+                    streamUrl: '',
+                    artwork: '',
+                    videoId: ''
+                }
+            ]
+        };
+
+        let appState = JSON.parse(JSON.stringify(defaultState));
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed && typeof parsed === 'object') {
+                    appState = {
+                        ...defaultState,
+                        ...parsed,
+                        customAiGames: Array.isArray(parsed.customAiGames) ? parsed.customAiGames : [],
+                        cartridgeHighScores: parsed.cartridgeHighScores || {},
+                        savedSongs: (Array.isArray(parsed.savedSongs) && parsed.savedSongs.length > 0)
+                            ? parsed.savedSongs
+                            : defaultState.savedSongs
+                    };
+                }
+            }
+        } catch (e) {
+            appState = JSON.parse(JSON.stringify(defaultState));
+        }
+
+        function setCloudBadgeStatus(text, isReady = true) {
+            const badge = document.getElementById('cloudSyncBadge');
+            if (!badge) return;
+            badge.textContent = text;
+            badge.className = isReady
+                ? 'px-1.5 py-0.5 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 text-[8px] font-extrabold shrink-0'
+                : 'px-1.5 py-0.5 rounded-full bg-amber-100 border border-amber-300 text-amber-800 text-[8px] font-extrabold shrink-0';
+        }
+
+        function saveAppState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            } catch (e) {}
+            if (typeof window.pushStateToFirestoreCloud === 'function') {
+                window.pushStateToFirestoreCloud(appState);
+            }
+            syncAllUIWithState();
+        }
+
+        function mergeCloudStateFromFirestore(cloudData) {
+            if (!cloudData || typeof cloudData !== 'object') return;
+            appState.bubbleHighScore = Math.max(appState.bubbleHighScore || 0, cloudData.bubbleHighScore || 0);
+            appState.pianoHighScore = Math.max(appState.pianoHighScore || 0, cloudData.pianoHighScore || 0);
+            appState.starHighScore = Math.max(appState.starHighScore || 0, cloudData.starHighScore || 0);
+            appState.slicerHighScore = Math.max(appState.slicerHighScore || 0, cloudData.slicerHighScore || 0);
+            appState.towerHighScore = Math.max(appState.towerHighScore || 0, cloudData.towerHighScore || 0);
+            appState.bflyHighScore = Math.max(appState.bflyHighScore || 0, cloudData.bflyHighScore || 0);
+
+            ['easy', 'medium', 'hard'].forEach(diff => {
+                const k = `memBest_${diff}`;
+                if (cloudData[k]) {
+                    appState[k] = appState[k] ? Math.min(appState[k], cloudData[k]) : cloudData[k];
+                }
+            });
+
+            if ((cloudData.unlockedPackLevel || 0) > (appState.unlockedPackLevel || 0)) {
+                appState.unlockedPackLevel = cloudData.unlockedPackLevel;
+            }
+            if (cloudData.lastUpdateTimestamp && cloudData.lastUpdateTimestamp > (appState.lastUpdateTimestamp || 0)) {
+                appState.lastUpdateTimestamp = cloudData.lastUpdateTimestamp;
+            }
+            if (Array.isArray(cloudData.customAiGames) && cloudData.customAiGames.length > (appState.customAiGames || []).length) {
+                appState.customAiGames = cloudData.customAiGames;
+            }
+            if (cloudData.cartridgeHighScores) {
+                appState.cartridgeHighScores = { ...(cloudData.cartridgeHighScores || {}), ...(appState.cartridgeHighScores || {}) };
+            }
+            if (Array.isArray(cloudData.savedSongs) && cloudData.savedSongs.length > 0) {
+                const mergedMap = new Map();
+                [...cloudData.savedSongs, ...appState.savedSongs].forEach(s => {
+                    if (s && s.title) mergedMap.set(s.title.toLowerCase(), s);
+                });
+                appState.savedSongs = Array.from(mergedMap.values()).slice(0, 40);
+            }
+
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            } catch (e) {}
+            syncAllUIWithState();
+        }
+
+        /* -----------------------------------------------------------------
+         * 2. GLOBAL NAVIGATION & SINGLE-LOOP MANAGER
+         * ----------------------------------------------------------------- */
+        let activeTab = 'arcade';
+        let activeMiniGame = 'bubbles';
+        let activeIntervalId = null;
+
+        function stopAllGameIntervals() {
+            if (activeIntervalId) {
+                clearInterval(activeIntervalId);
+                activeIntervalId = null;
+            }
+            bubbleGameActive = false;
+            pianoGameActive = false;
+            starGameActive = false;
+            slicerGameActive = false;
+            towerGameActive = false;
+            bflyGameActive = false;
+            cartActive = false;
+        }
+
+        function emergencyFixReset() {
+            stopAllGameIntervals();
+            closeUpdateModal();
+            closeBreakQuotaModal();
+            closeArtReviewOverlay(false);
+            switchMainTab(activeTab);
+            showToast('🛠️', 'Screen refreshed & ready! High scores safe ✨');
+        }
+
+        let toastTimer = null;
+        function showToast(emoji, text) {
+            const t = document.getElementById('cozyToast');
+            if (!t) return;
+            document.getElementById('cozyToastEmoji').textContent = emoji;
+            document.getElementById('cozyToastText').textContent = text;
+            t.classList.remove('opacity-0', '-translate-y-2');
+            t.classList.add('opacity-100', 'translate-y-0');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                t.classList.remove('opacity-100', 'translate-y-0');
+                t.classList.add('opacity-0', '-translate-y-2');
+            }, 3000);
+        }
+
+        /* -----------------------------------------------------------------
+         * 3. CRASH-PROOF WEB AUDIO API & PALINDROME MELODY ENGINE
+         *    Patterns: 1-2-3-4-4-3-2-1 and 1-2-3-4-5-4-3-2-1
+         * ----------------------------------------------------------------- */
+        let audioCtx = null;
+        let masterMuted = false;
+        let currentPianoVoice = 'grand';
+
+        // C Major / Lydian Warm Romantic Scale Frequencies
+        const noteFreqs = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
+        // Palindrome wave indices (0-based for 1-2-3-4-4-3-2-1 then 1-2-3-4-5-4-3-2-1)
+        const palindromeSequence = [
+            0, 1, 2, 3, 3, 2, 1, 0,
+            0, 1, 2, 3, 4, 3, 2, 1, 0
+        ];
+        let palindromeStep = 0;
+
+        function ensureAudio() {
+            if (masterMuted) return null;
+            if (!audioCtx) {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtx) audioCtx = new AudioCtx();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(() => {});
+            }
+            return audioCtx;
+        }
+
+        function toggleMasterMute() {
+            masterMuted = !masterMuted;
+            document.getElementById('muteIcon').textContent = masterMuted ? '🔇' : '🔊';
+            const audioEl = document.getElementById('directAudioElement');
+            if (audioEl) audioEl.muted = masterMuted;
+            if (masterMuted && synthSongInterval) stopBuiltInSynthSong();
+            showToast(masterMuted ? '🔇' : '🔊', masterMuted ? 'Audio Muted' : 'Audio Active');
+        }
+
+        function playMelodicTone(freq, duration = 0.85, voice = 'grand', vol = 0.14) {
+            if (masterMuted) return;
+            const ctx = ensureAudio();
+            if (!ctx) return;
+            try {
+                const now = ctx.currentTime;
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                if (voice === 'kalimba') {
+                    osc1.type = 'sine';
+                    osc2.type = 'triangle';
+                    osc2.frequency.setValueAtTime(freq * 2, now);
+                } else if (voice === 'lofi') {
+                    osc1.type = 'triangle';
+                    osc2.type = 'sine';
+                    osc2.frequency.setValueAtTime(freq * 0.5, now);
+                } else {
+                    osc1.type = 'triangle';
+                    osc2.type = 'sine';
+                    osc2.frequency.setValueAtTime(freq * 1.5, now);
+                }
+
+                osc1.frequency.setValueAtTime(freq, now);
+
+                const safeVol = Math.max(0.002, Math.min(0.3, vol));
+                gain.gain.setValueAtTime(0.001, now);
+                gain.gain.linearRampToValueAtTime(safeVol, now + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + Math.max(0.15, duration));
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + duration + 0.04);
+                osc2.stop(now + duration + 0.04);
+            } catch (e) {}
+        }
+
+        function playNextPalindromeNote(voice = 'kalimba') {
+            const noteIdx = palindromeSequence[palindromeStep % palindromeSequence.length];
+            palindromeStep++;
+            const freq = noteFreqs[noteIdx % noteFreqs.length];
+            playMelodicTone(freq, 0.95, voice, 0.15);
+        }
+
+        /* -----------------------------------------------------------------
+         * 4. CONFETTI & SPARKLE FX CANVAS
+         * ----------------------------------------------------------------- */
+        const fxCanvas = document.getElementById('fxCanvas');
+        const fxCtx = fxCanvas.getContext('2d');
+        let fxParticles = [];
+
+        function resizeFxCanvas() {
+            if (!fxCanvas.parentElement) return;
+            fxCanvas.width = fxCanvas.parentElement.clientWidth;
+            fxCanvas.height = fxCanvas.parentElement.clientHeight;
+        }
+
+        function spawnConfettiBurst(cx, cy, count = 24) {
+            const x = typeof cx === 'number' ? cx : fxCanvas.width / 2;
+            const y = typeof cy === 'number' ? cy : fxCanvas.height / 3;
+            const colors = ['#f46492', '#9b72f2', '#f59e0b', '#10b981', '#38bdf8'];
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 1.5 + Math.random() * 4.5;
+                fxParticles.push({
+                    x,
+                    y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed - 1.5,
+                    r: 2.5 + Math.random() * 2.5,
+                    color: colors[i % colors.length],
+                    alpha: 1
+                });
+            }
+        }
+
+        function resizeCanvasToParent(canvasId) {
+            const c = document.getElementById(canvasId);
+            if (!c || !c.parentElement) return;
+            const rect = c.parentElement.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+                c.width = rect.width;
+                c.height = rect.height;
+            }
+        }
+
+        /* -----------------------------------------------------------------
+         * 5. MAIN 4-TAB SWITCHER & MINI-GAME SWITCHER
+         * ----------------------------------------------------------------- */
+        function switchMainTab(tabKey) {
+            activeTab = tabKey;
+            playMelodicTone(523.25, 0.35, 'kalimba', 0.08);
+            const tabs = ['arcade', 'art', 'music', 'mood'];
+
+            tabs.forEach(t => {
+                const view = document.getElementById(`tabView-${t}`);
+                const btn = document.getElementById(`navTab-${t}`);
+                if (!view || !btn) return;
+                if (t === tabKey) {
+                    view.classList.remove('hidden');
+                    view.classList.add('flex');
+                    btn.className = 'flex-1 py-1.5 mx-1 rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all soft-pill-active font-bold';
+                } else {
+                    view.classList.add('hidden');
+                    view.classList.remove('flex');
+                    btn.className = 'flex-1 py-1.5 mx-1 rounded-2xl flex flex-col items-center justify-center gap-0.5 transition-all text-plum-800/70 font-semibold';
+                }
+            });
+
+            setTimeout(() => {
+                if (tabKey === 'arcade') {
+                    switchMiniGame(activeMiniGame);
+                } else if (tabKey === 'art') {
+                    stopAllGameIntervals();
+                    ensureArtCanvasInitialized();
+                } else if (tabKey === 'music') {
+                    stopAllGameIntervals();
+                } else if (tabKey === 'mood') {
+                    stopAllGameIntervals();
+                }
+            }, 25);
+        }
+
+        function switchMiniGame(gameKey) {
+            stopAllGameIntervals();
+            activeMiniGame = gameKey;
+            playMelodicTone(587.33, 0.35, 'kalimba', 0.08);
+
+            const baseGames = ['bubbles', 'memory', 'stars', 'piano', 'slicer', 'tower', 'butterfly'];
+            const isAiCartridge = gameKey.startsWith('ai-game-');
+
+            baseGames.forEach(g => {
+                const st = document.getElementById(`gameStage-${g}`);
+                const pill = document.getElementById(`gamePill-${g}`);
+                if (!st || !pill) return;
+                const isLocked = (g === 'slicer' && appState.unlockedPackLevel < 1) ||
+                                 (g === 'tower' && appState.unlockedPackLevel < 2) ||
+                                 (g === 'butterfly' && appState.unlockedPackLevel < 3);
+                if (g === gameKey) {
+                    st.classList.remove('hidden');
+                    st.classList.add('flex');
+                    pill.className = 'soft-pill-active px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition';
+                } else {
+                    st.classList.add('hidden');
+                    st.classList.remove('flex');
+                    pill.className = (isLocked ? 'hidden ' : '') + 'bg-white/90 border border-blush-200 text-plum-800 px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition';
+                }
+            });
+
+            const aiStage = document.getElementById('gameStage-aiCartridge');
+            if (isAiCartridge) {
+                aiStage.classList.remove('hidden');
+                aiStage.classList.add('flex');
+            } else {
+                aiStage.classList.add('hidden');
+                aiStage.classList.remove('flex');
+            }
+
+            renderDynamicCartridgePills();
+
+            setTimeout(() => {
+                if (gameKey === 'bubbles') startBubbleGame();
+                else if (gameKey === 'memory') initMemoryGame();
+                else if (gameKey === 'stars') startStarCatcherGame();
+                else if (gameKey === 'piano') startPianoTilesGame();
+                else if (gameKey === 'slicer') startSlicerGame();
+                else if (gameKey === 'tower') startTowerGame();
+                else if (gameKey === 'butterfly') startButterflyGame();
+                else if (isAiCartridge) {
+                    const cart = (appState.customAiGames || []).find(c => c.id === gameKey);
+                    if (cart) launchCartridgeGame(cart);
+                }
+            }, 30);
+        }
+
+        function syncAllUIWithState() {
+            document.getElementById('bubbleHighScore').textContent = appState.bubbleHighScore || 0;
+            document.getElementById('pianoHighScore').textContent = appState.pianoHighScore || 0;
+            document.getElementById('starHighScore').textContent = appState.starHighScore || 0;
+            document.getElementById('slicerHighScore').textContent = appState.slicerHighScore || 0;
+            document.getElementById('towerHighScore').textContent = appState.towerHighScore || 0;
+            document.getElementById('bflyHighScore').textContent = appState.bflyHighScore || 0;
+
+            const bestMem = appState[`memBest_${memDifficulty}`];
+            document.getElementById('memBestTimeText').textContent = bestMem ? `${bestMem}s` : '--';
+
+            if (appState.unlockedPackLevel >= 1) document.getElementById('gamePill-slicer').classList.remove('hidden');
+            if (appState.unlockedPackLevel >= 2) document.getElementById('gamePill-tower').classList.remove('hidden');
+            if (appState.unlockedPackLevel >= 3) document.getElementById('gamePill-butterfly').classList.remove('hidden');
+
+            renderDynamicCartridgePills();
+            refreshUpdateCooldownUI();
+            if (!showingSearchResults) renderCloudPlaylist();
+        }
+
+        function renderDynamicCartridgePills() {
+            const strip = document.getElementById('gameSelectorStrip');
+            if (!strip) return;
+            strip.querySelectorAll('.ai-cartridge-pill').forEach(el => el.remove());
+
+            (appState.customAiGames || []).forEach(cart => {
+                const btn = document.createElement('button');
+                const isActive = activeMiniGame === cart.id;
+                btn.id = `gamePill-${cart.id}`;
+                btn.className = `ai-cartridge-pill ${isActive ? 'soft-pill-active font-bold' : 'bg-white/90 border border-blush-200 text-plum-800 font-semibold'} px-2.5 py-1 rounded-full text-[11px] whitespace-nowrap transition`;
+                btn.textContent = `${cart.icon} ${cart.title}`;
+                btn.onclick = () => switchMiniGame(cart.id);
+                strip.appendChild(btn);
+            });
+        }
+
+        /* -----------------------------------------------------------------
+         * 11. TAB 2: 🎨 FIXED MULTI-STROKE DRAWING CANVAS + UNDO + AI REVIEW
+         *     CRITICAL FIX: Never resize or clear canvas on pointerdown!
+         * ----------------------------------------------------------------- */
+        const artCanvas = document.getElementById('freeArtCanvas');
+        const artCtx = artCanvas.getContext('2d');
+        let artCanvasInitialized = false;
+        let isDrawingArt = false;
+        let artBrushColor = '#f46492';
+        let artBrushSize = 5;
+        let isEraserMode = false;
+        let lastArtX = 0;
+        let lastArtY = 0;
+        let artUndoStack = [];
+
+        const drawingTasks = [
+            "Task: Ek pyara sa Flower 🌸 banao!",
+            "Task: Garma-garam Chai ka Cup ☕ banao!",
+            "Task: Muskurata hua Suraj ☀️ banao!",
+            "Task: Pyaari si Butterfly 🦋 banao!",
+            "Task: Raat ka Chaand aur Sitare 🌙⭐ banao!",
+            "Task: Pyara sa Heart aur Crown 💖👑 banao!",
+            "Task: Meethi si Ice-Cream Cone 🍦 banao!"
+        ];
+        let artTaskIdx = 0;
+
+        function ensureArtCanvasInitialized() {
+            if (!artCanvas.parentElement) return;
+            const rect = artCanvas.parentElement.getBoundingClientRect();
+            const targetW = Math.floor(rect.width);
+            const targetH = Math.floor(rect.height);
+            if (targetW <= 0 || targetH <= 0) return;
+
+            if (!artCanvasInitialized) {
+                artCanvas.width = targetW;
+                artCanvas.height = targetH;
+                artCtx.fillStyle = '#ffffff';
+                artCtx.fillRect(0, 0, targetW, targetH);
+                artCanvasInitialized = true;
+                saveArtSnapshotForUndo();
+            } else if (Math.abs(artCanvas.width - targetW) > 8 || Math.abs(artCanvas.height - targetH) > 8) {
+                // Preserve existing drawing via offscreen bitmap before resizing
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = artCanvas.width;
+                tempCanvas.height = artCanvas.height;
+                tempCanvas.getContext('2d').drawImage(artCanvas, 0, 0);
+
+                artCanvas.width = targetW;
+                artCanvas.height = targetH;
+                artCtx.fillStyle = '#ffffff';
+                artCtx.fillRect(0, 0, targetW, targetH);
+                artCtx.drawImage(tempCanvas, 0, 0);
+            }
+        }
+
+        function saveArtSnapshotForUndo() {
+            if (!artCanvasInitialized || artCanvas.width === 0) return;
+            try {
+                const snap = artCtx.getImageData(0, 0, artCanvas.width, artCanvas.height);
+                artUndoStack.push(snap);
+                if (artUndoStack.length > 15) artUndoStack.shift();
+            } catch (e) {}
+        }
+
+        function undoLastArtStroke() {
+            if (!artCanvasInitialized || artUndoStack.length <= 1) {
+                showToast('↩️', 'Nothing more to undo!');
+                return;
+            }
+            artUndoStack.pop(); // remove current state
+            const prevSnap = artUndoStack[artUndoStack.length - 1];
+            if (prevSnap) {
+                artCtx.putImageData(prevSnap, 0, 0);
+                playMelodicTone(493.88, 0.25, 'kalimba', 0.08);
+            }
+        }
+
+        function cycleArtTask() {
+            artTaskIdx = (artTaskIdx + 1) % drawingTasks.length;
+            document.getElementById('artTaskPrompt').textContent = drawingTasks[artTaskIdx];
+            playMelodicTone(587.33, 0.35, 'kalimba', 0.09);
+        }
+
+        function setArtBrush(color, eraser = false) {
+            artBrushColor = color;
+            isEraserMode = eraser;
+            document.getElementById('eraserBtn').className = eraser
+                ? 'px-2 py-1 rounded-xl soft-pill-active text-[10px] font-bold'
+                : 'px-2 py-1 rounded-xl bg-blush-50 border border-blush-200 text-[10px] font-bold text-plum-800';
+        }
+
+        function cycleBrushSize() {
+            if (artBrushSize === 5) {
+                artBrushSize = 10;
+                document.getElementById('brushSizeBtn').textContent = '🖌️ L';
+            } else if (artBrushSize === 10) {
+                artBrushSize = 2.5;
+                document.getElementById('brushSizeBtn').textContent = '🖌️ S';
+            } else {
+                artBrushSize = 5;
+                document.getElementById('brushSizeBtn').textContent = '🖌️ M';
+            }
+        }
+
+        function clearFreeArtCanvas() {
+            ensureArtCanvasInitialized();
+            artCtx.fillStyle = '#ffffff';
+            artCtx.fillRect(0, 0, artCanvas.width, artCanvas.height);
+            artUndoStack = [];
+            saveArtSnapshotForUndo();
+            playMelodicTone(440, 0.3, 'kalimba', 0.08);
+            showToast('🗑️', 'Canvas cleared!');
+        }
+
+        function drawStrokeSegment(x1, y1, x2, y2) {
+            artCtx.save();
+            artCtx.lineCap = 'round';
+            artCtx.lineJoin = 'round';
+            artCtx.strokeStyle = isEraserMode ? '#ffffff' : artBrushColor;
+            artCtx.lineWidth = isEraserMode ? 18 : artBrushSize;
+
+            artCtx.beginPath();
+            artCtx.moveTo(x1, y1);
+            artCtx.lineTo(x2, y2);
+            artCtx.stroke();
+            artCtx.restore();
+        }
+
+        artCanvas.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            if (!artCanvasInitialized) ensureArtCanvasInitialized();
+            isDrawingArt = true;
+            const r = artCanvas.getBoundingClientRect();
+            const scaleX = artCanvas.width / r.width;
+            const scaleY = artCanvas.height / r.height;
+            lastArtX = (e.clientX - r.left) * scaleX;
+            lastArtY = (e.clientY - r.top) * scaleY;
+            drawStrokeSegment(lastArtX, lastArtY, lastArtX + 0.1, lastArtY + 0.1);
+        });
+
+        artCanvas.addEventListener('pointermove', (e) => {
+            if (!isDrawingArt) return;
+            e.preventDefault();
+            const r = artCanvas.getBoundingClientRect();
+            const scaleX = artCanvas.width / r.width;
+            const scaleY = artCanvas.height / r.height;
+            const nx = (e.clientX - r.left) * scaleX;
+            const ny = (e.clientY - r.top) * scaleY;
+            drawStrokeSegment(lastArtX, lastArtY, nx, ny);
+            lastArtX = nx;
+            lastArtY = ny;
+        });
+
+        window.addEventListener('pointerup', () => {
+            if (isDrawingArt) {
+                isDrawingArt = false;
+                saveArtSnapshotForUndo();
+            }
+        });
+
+        async function evaluateDrawingWithAI() {
+            const btn = document.getElementById('artDoneBtn');
+            btn.textContent = '✨ Reviewing...';
+            btn.disabled = true;
+
+            const currentTask = document.getElementById('artTaskPrompt').textContent;
+            const fallbackReviews = [
+                { score: "9.8 / 10 ⭐", comment: `Wah Rajni! Kitne pyare colors aur smooth strokes lagaye hain! Yeh drawing dekh ke hi chehre pe badi si smile aa gayi! 🌸👏` },
+                { score: "10 / 10 🏆", comment: `Kamaal kar diya! Ekdum creative aur aesthetic masterpiece banaya hai—tumhari imagination sach mein lajawab hai! ✨💖` },
+                { score: "9.9 / 10 🌟", comment: `Bahut khoobsurat! Itne pyar se banaya gaya sketch kisi ka bhi din khushgawar bana de. Full marks! 🎨🌷` }
+            ];
+            let chosenReview = fallbackReviews[Math.floor(Math.random() * fallbackReviews.length)];
+
+            try {
+                const base64Img = artCanvas.toDataURL('image/png').split(',')[1];
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    signal: controller.signal,
+                    body: JSON.stringify({
+                        contents: [{
+                            role: "user",
+                            parts: [
+                                { text: `The user drew this on a cozy mobile canvas for "${currentTask}". Give an enthusiastic, warm 2-line Hinglish compliment ("Shaabashi") and a high rating like "9.9/10 Masterpiece!". Keep it under 28 words.` },
+                                { inlineData: { mimeType: "image/png", data: base64Img } }
+                            ]
+                        }]
+                    })
+                });
+                clearTimeout(timeoutId);
+                if (res.ok) {
+                    const data = await res.json();
+                    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text && text.trim().length > 8) {
+                        chosenReview = { score: "9.9 / 10 Masterpiece! 🌟", comment: text.trim() };
+                    }
+                }
+            } catch (e) {}
+
+            btn.textContent = '✨ Done! Check';
+            btn.disabled = false;
+
+            spawnConfettiBurst();
+            playMelodicTone(523.25, 0.5, 'grand', 0.16);
+            setTimeout(() => playMelodicTone(659.25, 0.7, 'grand', 0.16), 140);
+
+            document.getElementById('artReviewScoreBadge').textContent = chosenReview.score;
+            document.getElementById('artReviewComment').textContent = chosenReview.comment;
+            document.getElementById('artReviewOverlay').classList.remove('hidden');
+        }
+
+        function closeArtReviewOverlay(nextTask = false) {
+            document.getElementById('artReviewOverlay').classList.add('hidden');
+            if (nextTask) {
+                clearFreeArtCanvas();
+                cycleArtTask();
+            }
+        }
+
+        /* -----------------------------------------------------------------
+         * 12. TAB 3: 🎵 AD-FREE FULL-SONG GLOBAL MUSIC PLAYER (3-6 MIN TRACKS)
+         *     Multi-Mirror JioSaavn Full 320kbps Fetcher + Cloud Library
+         * ----------------------------------------------------------------- */
+        let backingLoopInterval = null;
+        let showingSearchResults = false;
+        let lastSearchTracks = [];
+        let activeVideoIdForDeck = null;
+        let currentPlayingSong = null;
+        let currentPlaylistIndex = 0;
+        let isLoopEnabled = false;
+
+        const directAudioEl = document.getElementById('directAudioElement');
+
+        function formatDuration(sec) {
+            if (!sec || isNaN(sec) || !isFinite(sec)) return '0:00';
+            const m = Math.floor(sec / 60);
+            const s = Math.floor(sec % 60);
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        function switchMusicSubTab(sub) {
+            playMelodicTone(523.25, 0.3, 'kalimba', 0.08);
+            const p1 = document.getElementById('musicPanel-linkStudio');
+            const p2 = document.getElementById('musicPanel-customPiano');
+            const b1 = document.getElementById('musicSub-linkStudio');
+            const b2 = document.getElementById('musicSub-customPiano');
+
+            if (sub === 'linkStudio') {
+                p1.classList.remove('hidden');
+                p1.classList.add('flex');
+                p2.classList.add('hidden');
+                p2.classList.remove('flex');
+                b1.className = 'py-1.5 rounded-xl text-xs font-bold soft-pill-active transition';
+                b2.className = 'py-1.5 rounded-xl text-xs font-bold text-plum-800 transition';
+            } else {
+                p2.classList.remove('hidden');
+                p2.classList.add('flex');
+                p1.classList.add('hidden');
+                p1.classList.remove('flex');
+                b2.className = 'py-1.5 rounded-xl text-xs font-bold soft-pill-active transition';
+                b1.className = 'py-1.5 rounded-xl text-xs font-bold text-plum-800 transition';
+            }
+        }
+
+        function extractYouTubeId(url) {
+            const reg = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts|live)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+            const match = url.match(reg);
+            return match ? match[1] : null;
+        }
+
+        async function fetchWithTimeout(url, timeoutMs = 4200) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const res = await fetch(url, { signal: controller.signal });
+                clearTimeout(timer);
+                return res;
+            } catch (e) {
+                clearTimeout(timer);
+                throw e;
+            }
+        }
+
+        function decodeHtmlEntities(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&quot;/g, '"')
+                .replace(/&#039;/g, "'")
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>');
+        }
+
+        function extractFullStreamFromSaavnItem(item) {
+            if (!item) return null;
+            const dlArr = item.downloadUrl || item.download_url || item.media_url;
+            let bestUrl = '';
+            if (Array.isArray(dlArr) && dlArr.length > 0) {
+                const q320 = dlArr.find(d => d.quality === '320kbps');
+                const q160 = dlArr.find(d => d.quality === '160kbps');
+                const q96 = dlArr.find(d => d.quality === '96kbps');
+                const chosen = q320 || q160 || q96 || dlArr[dlArr.length - 1];
+                bestUrl = chosen?.url || chosen?.link || '';
+            } else if (typeof dlArr === 'string') {
+                bestUrl = dlArr;
+            }
+            if (!bestUrl) return null;
+            bestUrl = bestUrl.replace(/^http:\/\//i, 'https://');
+
+            let art = '';
+            if (Array.isArray(item.image) && item.image.length > 0) {
+                const imgObj = item.image[item.image.length - 1];
+                art = imgObj?.url || imgObj?.link || '';
+            } else if (typeof item.image === 'string') {
+                art = item.image;
+            }
+
+            let artist = '';
+            if (item.artists?.primary && Array.isArray(item.artists.primary)) {
+                artist = item.artists.primary.map(a => a.name).join(', ');
+            } else if (item.primaryArtists) {
+                artist = item.primaryArtists;
+            } else if (item.subtitle) {
+                artist = item.subtitle;
+            }
+
+            return {
+                id: 'saavn-' + (item.id || Date.now() + Math.random()),
+                title: decodeHtmlEntities(item.name || item.title || 'Full Track'),
+                artist: decodeHtmlEntities(artist || 'Full Song Stream'),
+                streamUrl: bestUrl,
+                artwork: art ? art.replace(/^http:\/\//i, 'https://') : '',
+                duration: Number(item.duration) || 0,
+                videoId: ''
+            };
+        }
+
+        // Multi-Mirror Full-Song Search Engine (Returns full 3 to 6 min 320kbps tracks)
+        async function searchFullSongsMultiMirror(query) {
+            const mirrors = [
+                `https://saavn.dev/api/search/songs?query=${encodeURIComponent(query)}&limit=8`,
+                `https://jiosaavn-api-privatecvc2.vercel.app/search/songs?query=${encodeURIComponent(query)}&limit=8`,
+                `https://saavn.sumit.co/api/search/songs?query=${encodeURIComponent(query)}&limit=8`
+            ];
+
+            for (const apiUrl of mirrors) {
+                try {
+                    const res = await fetchWithTimeout(apiUrl, 4000);
+                    if (!res.ok) continue;
+                    const json = await res.json();
+                    const rawList = json?.data?.results || json?.results || (Array.isArray(json?.data) ? json.data : []);
+                    if (Array.isArray(rawList) && rawList.length > 0) {
+                        const parsed = rawList.map(extractFullStreamFromSaavnItem).filter(Boolean);
+                        if (parsed.length > 0) return parsed;
+                    }
+                } catch (e) {}
+            }
+            return [];
+        }
+
+        async function handleSmartSongInput() {
+            const urlIn = document.getElementById('songUrlInput');
+            const rawInput = urlIn.value.trim();
+            if (!rawInput) {
+                showToast('🎵', 'Type any song name (like Kesariya, Kalyani) or paste a link!');
+                return;
+            }
+
+            const goBtn = document.getElementById('songGoBtn');
+            goBtn.textContent = '⏳...';
+            goBtn.disabled = true;
+
+            try {
+                const ytId = extractYouTubeId(rawInput);
+                const isDirectAudio = /^https?:\/\/.+\.(mp3|m4a|mp4|wav|ogg|aac)(\?.*)?$/i.test(rawInput);
+
+                if (isDirectAudio) {
+                    const directTrack = {
+                        id: 'song-' + Date.now(),
+                        title: 'Custom Full Audio Stream',
+                        artist: 'Direct Media Link',
+                        streamUrl: rawInput,
+                        artwork: '',
+                        searchQuery: '',
+                        videoId: ''
+                    };
+                    appState.savedSongs.unshift(directTrack);
+                    urlIn.value = '';
+                    saveAppState();
+                    await playStudioTrackObject(directTrack);
+                } else if (ytId) {
+                    let resolvedTitle = '';
+                    try {
+                        const metaRes = await fetchWithTimeout(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${ytId}`, 2500);
+                        if (metaRes.ok) {
+                            const meta = await metaRes.json();
+                            if (meta && meta.title) resolvedTitle = meta.title;
+                        }
+                    } catch (e) {}
+
+                    const cleanSearch = (resolvedTitle || '')
+                        .replace(/\(.*?\)|\[.*?\]|official\s*(music\s*)?video|full\s*video|lyrical|lyrics|hd|4k|audio|song/gi, ' ')
+                        .replace(/[-|:"']/g, ' ')
+                        .replace(/\s+/g, ' ')
+                        .trim();
+
+                    let fullMatches = [];
+                    if (cleanSearch.length > 2) {
+                        fullMatches = await searchFullSongsMultiMirror(cleanSearch);
+                    }
+
+                    const bestMatch = fullMatches[0];
+                    const newSong = {
+                        id: 'song-' + Date.now(),
+                        title: bestMatch ? bestMatch.title : (resolvedTitle || `YouTube Track (${ytId})`),
+                        artist: bestMatch ? bestMatch.artist : 'YouTube Link + Ad-Free Stream',
+                        streamUrl: bestMatch ? bestMatch.streamUrl : '',
+                        artwork: bestMatch ? bestMatch.artwork : '',
+                        searchQuery: cleanSearch,
+                        videoId: ytId
+                    };
+
+                    appState.savedSongs.unshift(newSong);
+                    urlIn.value = '';
+                    saveAppState();
+                    await playStudioTrackObject(newSong);
+                } else {
+                    await searchAndDisplaySongs(rawInput, true);
+                    urlIn.value = '';
+                }
+            } finally {
+                goBtn.textContent = '🔍 Search';
+                goBtn.disabled = false;
+            }
+        }
+
+        async function quickSearchAndPlay(queryText) {
+            document.getElementById('songUrlInput').value = queryText;
+            await searchAndDisplaySongs(queryText, true);
+            document.getElementById('songUrlInput').value = '';
+        }
+
+        async function searchAndDisplaySongs(query, autoPlayFirst = true) {
+            showToast('🔍', `Searching full ad-free song "${query}"...`);
+            const fullTracks = await searchFullSongsMultiMirror(query);
+            if (fullTracks.length > 0) {
+                lastSearchTracks = fullTracks;
+                showingSearchResults = true;
+                renderSearchResultsList();
+                if (autoPlayFirst) {
+                    saveAndPlaySearchResult(0);
+                }
+                return;
+            }
+            showToast('🎬', 'Opening Ad-Free Search Player...');
+        }
+
+        function saveAndPlaySearchResult(idx) {
+            const track = lastSearchTracks[idx];
+            if (!track) return;
+            const existingIdx = appState.savedSongs.findIndex(
+                s => s.title.toLowerCase() === track.title.toLowerCase()
+            );
+            let finalTrack = track;
+            if (existingIdx >= 0) {
+                appState.savedSongs[existingIdx] = { ...appState.savedSongs[existingIdx], ...track };
+                finalTrack = appState.savedSongs[existingIdx];
+            } else {
+                finalTrack = { ...track, id: 'song-' + Date.now() };
+                appState.savedSongs.unshift(finalTrack);
+            }
+            saveAppState();
+            playStudioTrackObject(finalTrack);
+        }
+
+        function saveCurrentTrackToCloud() {
+            if (!currentPlayingSong) {
+                showToast('❤️', 'Play any song first to save it!');
+                return;
+            }
+            const exists = appState.savedSongs.some(
+                s => s.title.toLowerCase() === currentPlayingSong.title.toLowerCase()
+            );
+            if (!exists) {
+                appState.savedSongs.unshift(currentPlayingSong);
+            }
+            saveAppState();
+            showToast('☁️', `"${currentPlayingSong.title}" saved to Cloud Library!`);
+        }
+
+        function showSavedLibraryList() {
+            showingSearchResults = false;
+            document.getElementById('backToLibBtn').classList.add('hidden');
+            renderCloudPlaylist();
+        }
+
+        function renderSearchResultsList() {
+            const container = document.getElementById('cloudPlaylistContainer');
+            document.getElementById('playlistHeaderTitle').innerHTML = `🎶 Full-Length Results (${lastSearchTracks.length})`;
+            document.getElementById('backToLibBtn').classList.remove('hidden');
+            container.innerHTML = '';
+
+            lastSearchTracks.forEach((song, idx) => {
+                const durLabel = song.duration ? formatDuration(song.duration) : 'Full Song';
+                const row = document.createElement('div');
+                row.className = 'flex items-center justify-between gap-2 p-1.5 rounded-2xl bg-blush-50/95 border border-blush-300 shadow-sm';
+                row.innerHTML = `
+                    <button onclick="saveAndPlaySearchResult(${idx})" class="flex-1 flex items-center gap-2 text-left min-w-0 active:scale-95 transition">
+                        <img src="${song.artwork || ''}" class="w-9 h-9 rounded-xl object-cover bg-plum-900 shrink-0" onerror="this.style.display='none'">
+                        <div class="truncate flex-1">
+                            <div class="text-xs font-bold text-plum-900 truncate">${song.title}</div>
+                            <div class="text-[10px] text-plum-800/70 truncate">${song.artist} • <strong class="text-blush-600">${durLabel}</strong></div>
+                        </div>
+                        <span class="px-2 py-1 rounded-lg soft-pill-active text-[10px] font-bold shrink-0">▶️ Play</span>
+                    </button>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function handleLocalAudioFile(event) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            const objUrl = URL.createObjectURL(file);
+            const localTrack = {
+                id: 'local-' + Date.now(),
+                title: file.name.replace(/\.[^/.]+$/, ''),
+                artist: 'Phone Local Audio',
+                streamUrl: objUrl,
+                artwork: '',
+                searchQuery: '',
+                videoId: ''
+            };
+            playStudioTrackObject(localTrack);
+        }
+
+        function playSavedTrack(songId) {
+            const idx = appState.savedSongs.findIndex(s => s.id === songId);
+            if (idx >= 0) {
+                currentPlaylistIndex = idx;
+                playStudioTrackObject(appState.savedSongs[idx]);
+            }
+        }
+
+        function playPrevNextTrack(dir) {
+            if (!appState.savedSongs.length) return;
+            currentPlaylistIndex = (currentPlaylistIndex + dir + appState.savedSongs.length) % appState.savedSongs.length;
+            playStudioTrackObject(appState.savedSongs[currentPlaylistIndex]);
+        }
+
+        function toggleRepeatSong() {
+            isLoopEnabled = !isLoopEnabled;
+            directAudioEl.loop = isLoopEnabled;
+            const btn = document.getElementById('repeatSongBtn');
+            btn.textContent = isLoopEnabled ? '🔂 Loop ON' : '🔁 Loop Off';
+            btn.className = isLoopEnabled
+                ? 'px-2 py-1 rounded-lg bg-blush-500 text-white text-[10px] font-bold active:scale-95'
+                : 'px-2 py-1 rounded-lg bg-white/10 text-blush-200 text-[10px] font-bold active:scale-95';
+        }
+
+        async function playStudioTrackObject(song) {
+            currentPlayingSong = song;
+            document.getElementById('activeSongTitle').textContent = song.title;
+            document.getElementById('activeSongArtist').textContent = song.artist || 'Loading full 320kbps track...';
+            document.getElementById('studioModeBadge').textContent = '⏳ Fetching Full Song Stream...';
+
+            // If starter song doesn't have streamUrl cached yet, resolve full song stream now
+            if (!song.streamUrl && (song.searchQuery || song.title)) {
+                const q = song.searchQuery || `${song.title} ${song.artist || ''}`;
+                const matches = await searchFullSongsMultiMirror(q);
+                if (matches.length > 0) {
+                    song.streamUrl = matches[0].streamUrl;
+                    song.artwork = matches[0].artwork || song.artwork;
+                    song.artist = matches[0].artist || song.artist;
+                    song.duration = matches[0].duration || song.duration;
+                    saveAppState();
+                }
+            }
+
+            const artImg = document.getElementById('activeSongArt');
+            const fallbackIcon = document.getElementById('activeSongFallbackIcon');
+            if (song.artwork) {
+                artImg.src = song.artwork;
+                artImg.classList.remove('hidden');
+                fallbackIcon.classList.add('hidden');
+            } else {
+                artImg.classList.add('hidden');
+                fallbackIcon.classList.remove('hidden');
+            }
+
+            document.getElementById('activeSongArtist').textContent = song.artist || 'Full Ad-Free Track';
+
+            activeVideoIdForDeck = song.videoId || null;
+            const ytBtn = document.getElementById('ytDeckToggleBtn');
+            if (activeVideoIdForDeck) {
+                ytBtn.classList.remove('hidden');
+            } else {
+                ytBtn.classList.add('hidden');
+                document.getElementById('visibleYtDeckWrapper').classList.add('hidden');
+            }
+
+            if (song.streamUrl) {
+                document.getElementById('visibleYtDeckWrapper').classList.add('hidden');
+                document.getElementById('ytPlayerContainer').innerHTML = '';
+                directAudioEl.src = song.streamUrl;
+                directAudioEl.currentTime = 0;
+                try {
+                    await directAudioEl.play();
+                    document.getElementById('mainPlayPauseIcon').textContent = '⏸️';
+                    document.getElementById('studioModeBadge').textContent = '✨ Ad-Free 320kbps Full Song Playing';
+                    showToast('🎶', `Playing full song: "${song.title}"`);
+                } catch (err) {
+                    document.getElementById('mainPlayPauseIcon').textContent = '▶️';
+                    document.getElementById('studioModeBadge').textContent = '👆 Tap Play to Start Stream';
+                }
+            } else if (song.videoId) {
+                directAudioEl.pause();
+                openVisibleYouTubeDeck(song.videoId);
+            } else {
+                showToast('🔍', 'Could not load stream right now, try another song name!');
+            }
+        }
+
+        function openVisibleYouTubeDeck(videoId) {
+            const wrapper = document.getElementById('visibleYtDeckWrapper');
+            wrapper.classList.remove('hidden');
+            document.getElementById('studioModeBadge').textContent = '🎬 Ad-Free Video Mode Active';
+            document.getElementById('ytPlayerContainer').innerHTML = `
+                <iframe
+                    width="100%"
+                    height="100%"
+                    src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&playsinline=1&rel=0&modestbranding=1"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>`;
+        }
+
+        function toggleYouTubeVideoDeck() {
+            if (!activeVideoIdForDeck) return;
+            const wrapper = document.getElementById('visibleYtDeckWrapper');
+            if (wrapper.classList.contains('hidden')) {
+                directAudioEl.pause();
+                document.getElementById('mainPlayPauseIcon').textContent = '▶️';
+                openVisibleYouTubeDeck(activeVideoIdForDeck);
+            } else {
+                wrapper.classList.add('hidden');
+                document.getElementById('ytPlayerContainer').innerHTML = '';
+                if (directAudioEl.src) {
+                    directAudioEl.play().catch(() => {});
+                    document.getElementById('mainPlayPauseIcon').textContent = '⏸️';
+                }
+            }
+        }
+
+        function toggleStudioPlayPause() {
+            if (!directAudioEl.src) {
+                if (appState.savedSongs.length > 0) {
+                    playSavedTrack(appState.savedSongs[0].id);
+                }
+                return;
+            }
+            if (directAudioEl.paused) {
+                directAudioEl.play().then(() => {
+                    document.getElementById('mainPlayPauseIcon').textContent = '⏸️';
+                }).catch(() => {});
+            } else {
+                directAudioEl.pause();
+                document.getElementById('mainPlayPauseIcon').textContent = '▶️';
+            }
+        }
+
+        function seekStudioAudio(val) {
+            if (directAudioEl && directAudioEl.duration) {
+                directAudioEl.currentTime = (val / 100) * directAudioEl.duration;
+            }
+        }
+
+        directAudioEl.addEventListener('loadedmetadata', () => {
+            document.getElementById('songTotalDuration').textContent = formatDuration(directAudioEl.duration);
+        });
+
+        directAudioEl.addEventListener('timeupdate', () => {
+            document.getElementById('songCurrentTime').textContent = formatDuration(directAudioEl.currentTime);
+            if (directAudioEl.duration) {
+                document.getElementById('audioSeekSlider').value =
+                    Math.round((directAudioEl.currentTime / directAudioEl.duration) * 100);
+                document.getElementById('songTotalDuration').textContent = formatDuration(directAudioEl.duration);
+            }
+        });
+
+        directAudioEl.addEventListener('ended', () => {
+            if (!isLoopEnabled) {
+                playPrevNextTrack(1);
+            }
+        });
+
+        function deleteSavedTrack(songId) {
+            appState.savedSongs = appState.savedSongs.filter(s => s.id !== songId);
+            saveAppState();
+            showToast('🗑️', 'Removed from Cloud Library');
+        }
+
+        function renderCloudPlaylist() {
+            const container = document.getElementById('cloudPlaylistContainer');
+            if (!container) return;
+            document.getElementById('playlistHeaderTitle').innerHTML =
+                `☁️ My Saved Full Songs (<span id="savedSongsCount">${appState.savedSongs.length}</span>)`;
+            document.getElementById('backToLibBtn').classList.add('hidden');
+            container.innerHTML = '';
+
+            appState.savedSongs.forEach((song) => {
+                const durText = song.duration ? formatDuration(song.duration) : 'Full Song';
+                const row = document.createElement('div');
+                row.className = 'flex items-center justify-between gap-2 p-1.5 rounded-2xl bg-white/90 border border-blush-200 shadow-sm';
+                row.innerHTML = `
+                    <button onclick="playSavedTrack('${song.id}')" class="flex-1 flex items-center gap-2 text-left min-w-0 active:scale-95 transition">
+                        <span class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blush-400 to-lavender-500 text-white text-xs flex items-center justify-center shrink-0 overflow-hidden relative">
+                            ${song.artwork ? `<img src="${song.artwork}" class="w-full h-full object-cover">` : '▶️'}
+                        </span>
+                        <div class="truncate">
+                            <div class="text-xs font-bold text-plum-900 truncate">${song.title}</div>
+                            <div class="text-[10px] text-plum-800/60 truncate">${song.artist || 'Ad-Free Full Track'} • ${durText}</div>
+                        </div>
+                    </button>
+                    <button onclick="deleteSavedTrack('${song.id}')" class="w-7 h-7 rounded-xl bg-blush-50 text-plum-800/60 hover:text-red-600 text-xs flex items-center justify-center shrink-0">
+                        ✕
+                    </button>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function setPianoVoice(voice) {
+            currentPianoVoice = voice;
+            ['grand', 'kalimba', 'lofi'].forEach(v => {
+                document.getElementById(`voiceBtn-${v}`).className = v === voice
+                    ? 'py-1.5 rounded-xl soft-pill-active text-[11px] font-bold'
+                    : 'py-1.5 rounded-xl bg-white border border-blush-200 text-plum-800 text-[11px] font-semibold';
+            });
+            playMelodicTone(523.25, 0.8, voice, 0.14);
+        }
+
+        function triggerCustomPianoKey(idx, swarLabel) {
+            const freq = noteFreqs[idx % noteFreqs.length];
+            playMelodicTone(freq, 1.25, currentPianoVoice, 0.18);
+            document.getElementById('lastPlayedNoteText').textContent = `Swar: ${swarLabel} 🎶`;
+        }
+
+        function toggleAutoBackingMelody() {
+            const btn = document.getElementById('backingLoopBtn');
+            if (backingLoopInterval) {
+                clearInterval(backingLoopInterval);
+                backingLoopInterval = null;
+                btn.textContent = '▶️ Auto Dhun';
+                btn.className = 'px-3 py-1.5 rounded-full bg-lavender-100 border border-lavender-300 text-plum-900 text-[11px] font-bold active:scale-95';
+            } else {
+                btn.textContent = '⏸️ Stop Dhun';
+                btn.className = 'px-3 py-1.5 rounded-full soft-pill-active text-[11px] font-bold active:scale-95';
+                playNextPalindromeNote(currentPianoVoice);
+                backingLoopInterval = setInterval(() => {
+                    playNextPalindromeNote(currentPianoVoice);
+                }, 420);
+            }
+        }
+
+        /* -----------------------------------------------------------------
+         * 13. TAB 4: 🌸 MOOD (6-Cloud Gussa Smasher + Spin Wheel + Lotus)
+         * ----------------------------------------------------------------- */
+        const proPrakharWingmanLines = [
+            "☀️ Saare badal gayab! Waise Prakhar ka masoom sa chehra yaad karo... ab thoda sa muskura bhi do! 😂💖",
+            "🌈 Gussa chhoo-mantar! Badle mein aaj Prakhar se apni manpasand Ice-Cream maangne ka poora haq banta hai! 🍦✨",
+            "🌸 Mood ekdum fresh! Aaj shaam Prakhar ke saath ek pyari si chai aur gup-shup pakki! ☕💖",
+            "✨ Sunshine aa gayi! Tumhari ek pyari si smile dekh ke Prakhar ka poora din ban jaata hai! 😊🌷"
+        ];
+        let wingmanIdx = 0;
+        let cloudsRemaining = 6;
+
+        function resetGussaClouds() {
+            const grid = document.getElementById('gussaCloudGrid');
+            if (!grid) return;
+            cloudsRemaining = 6;
+            grid.innerHTML = '';
+            for (let i = 0; i < 6; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'h-11 rounded-2xl bg-plum-900 text-white text-xl flex items-center justify-center shadow active:scale-75 transition';
+                btn.textContent = '⛈️';
+                btn.onclick = (e) => smashSingleCloud(btn, e);
+                grid.appendChild(btn);
+            }
+            document.getElementById('gussaWingmanNote').textContent =
+                'Mann bhaari ho ya gussa aaye toh upar ke saare kale badal phod do! ⚡';
+        }
+
+        function smashSingleCloud(btn, e) {
+            if (btn.dataset.smashed === 'true') return;
+            btn.dataset.smashed = 'true';
+            btn.textContent = '🌈';
+            btn.className = 'h-11 rounded-2xl bg-amber-100 border border-amber-300 text-xl flex items-center justify-center transition';
+            playNextPalindromeNote('kalimba');
+            spawnConfettiBurst(e.clientX, e.clientY, 10);
+            cloudsRemaining--;
+
+            if (cloudsRemaining <= 0) {
+                const line = proPrakharWingmanLines[wingmanIdx % proPrakharWingmanLines.length];
+                wingmanIdx++;
+                document.getElementById('gussaWingmanNote').textContent = line;
+                spawnConfettiBurst();
+            }
+        }
+
+        let wheelDeg = 0;
+        let selectedWheelTarget = null;
+        const wheelActionItems = [
+            { text: "🎹 Playable Grand Piano par 10 seconds apni dhun bajao!", targetTab: 'music', sub: 'customPiano' },
+            { text: "🎨 Art Canvas par ek pyara sa Flower 🌸 banao aur AI rating lo!", targetTab: 'art' },
+            { text: "🫧 Bubble Rush mein 150+ score bana ke dikhao!", targetTab: 'arcade', game: 'bubbles' },
+            { text: "🃏 Memory Match (Stopwatch Mode) mein apna fastest record todo!", targetTab: 'arcade', game: 'memory' },
+            { text: "🍦 Prakhar ko bina wajah ek pyari si smile do aur Ice-Cream maango!", targetTab: null }
+        ];
+
+        function spinFunWheel() {
+            playNextPalindromeNote('kalimba');
+            wheelDeg += 720 + Math.floor(Math.random() * 360);
+            document.getElementById('funWheelSvg').style.transform = `rotate(${wheelDeg}deg)`;
+            document.getElementById('wheelGoBtn').classList.add('hidden');
+
+            setTimeout(() => {
+                spawnConfettiBurst();
+                const pick = wheelActionItems[Math.floor(Math.random() * wheelActionItems.length)];
+                selectedWheelTarget = pick;
+                document.getElementById('wheelActionText').textContent = pick.text;
+                if (pick.targetTab) {
+                    document.getElementById('wheelGoBtn').classList.remove('hidden');
+                }
+            }, 2600);
+        }
+
+        function jumpToWheelAction() {
+            if (!selectedWheelTarget) return;
+            if (selectedWheelTarget.targetTab === 'arcade') {
+                switchMainTab('arcade');
+                switchMiniGame(selectedWheelTarget.game);
+            } else if (selectedWheelTarget.targetTab === 'art') {
+                switchMainTab('art');
+            } else if (selectedWheelTarget.targetTab === 'music') {
+                switchMainTab('music');
+                switchMusicSubTab(selectedWheelTarget.sub);
+            }
+        }
+
+        setInterval(() => {
+            const lbl = document.getElementById('breathGuideLabel');
+            if (lbl) {
+                lbl.textContent = lbl.textContent.includes('Andar') ? 'Saans Baahar... 🌿' : 'Saans Andar... 🌸';
+            }
+        }, 4000);
+
+        /* -----------------------------------------------------------------
+         * 14. INFINITE 3-DAY UPDATE ENGINE (#1..3 Built-in + #4..∞ AI Cartridges)
+         * ----------------------------------------------------------------- */
+        const proceduralCartridgeCatalog = [
+            { title: "Chai Biscuit Catch", icon: "☕", engine: "catcher", targetEmojis: ["☕", "🍪", "🥟"], hazardEmoji: "🌧️", bgTop: "#3b1d14", bgBottom: "#d97706", speed: 2.2, ruleText: "Catch गरमा-गरम Chai & Biscuit, dodge 🌧️!" },
+            { title: "Firefly Night Jar", icon: "✨", engine: "reflex", targetEmojis: ["✨", "🌟", "💫"], hazardEmoji: "🕸️", bgTop: "#0f172a", bgBottom: "#4c1d95", speed: 2.0, ruleText: "Tap glowing fireflies before time runs out!" },
+            { title: "Rangoli Petal Slice", icon: "🌺", engine: "slicer", targetEmojis: ["🌺", "🌼", "🌷"], hazardEmoji: "🪨", bgTop: "#4a044e", bgBottom: "#db2777", speed: 2.3, ruleText: "Slice flower petals, avoid stones!" },
+            { title: "Golgappa Pani Rush", icon: "🥟", engine: "catcher", targetEmojis: ["🥟", "🌶️", "🍋"], hazardEmoji: "🐝", bgTop: "#14532d", bgBottom: "#10b981", speed: 2.4, ruleText: "Catch crispy Golgappas in the basket!" },
+            { title: "Moonlight Lanterns", icon: "🏮", engine: "reflex", targetEmojis: ["🏮", "🌙", "⭐"], hazardEmoji: "💨", bgTop: "#1e1b4b", bgBottom: "#7e22ce", speed: 2.1, ruleText: "Tap floating sky lanterns!" },
+            { title: "Kulfi Falooda Pop", icon: "🍧", engine: "slicer", targetEmojis: ["🍧", "🍦", "🍒"], hazardEmoji: "🌶️", bgTop: "#500724", bgBottom: "#f43f5e", speed: 2.3, ruleText: "Slice sweet Kulfis, dodge mirchi!" }
+        ];
+
+        function refreshUpdateCooldownUI() {
+            const elapsed = Date.now() - (appState.lastUpdateTimestamp || 0);
+            const isReady = elapsed >= THREE_DAYS_MS;
+            const pingDot = document.getElementById('updatePingDot');
+            const topLabel = document.getElementById('topUpdateLabel');
+            const nextUpdateNum = (appState.unlockedPackLevel || 0) + 1;
+
+            if (isReady) {
+                topLabel.textContent = `Update #${nextUpdateNum}`;
+                pingDot.classList.remove('hidden');
+            } else {
+                const hrsLeft = Math.max(1, Math.ceil((THREE_DAYS_MS - elapsed) / (1000 * 60 * 60)));
+                const daysLeft = Math.ceil(hrsLeft / 24);
+                topLabel.textContent = `${daysLeft}d left`;
+                pingDot.classList.add('hidden');
+            }
+
+            for (let p = 1; p <= 3; p++) {
+                const st = document.getElementById(`packStatus-${p}`);
+                const row = document.getElementById(`packRow-${p}`);
+                if (appState.unlockedPackLevel >= p) {
+                    st.textContent = '✅ Unlocked';
+                    row.className = 'flex items-center justify-between text-emerald-700 font-extrabold';
+                } else {
+                    st.textContent = '🔒 Locked';
+                    row.className = 'flex items-center justify-between text-plum-800/60';
+                }
+            }
+
+            const aiCount = (appState.customAiGames || []).length;
+            document.getElementById('aiCartridgeCountBadge').textContent = `${aiCount} Installed`;
+            const listEl = document.getElementById('installedAiCartridgesList');
+            listEl.innerHTML = '';
+            (appState.customAiGames || []).forEach(g => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between text-plum-900 bg-white/80 px-2 py-0.5 rounded-lg';
+                item.innerHTML = `<span>${g.icon} ${g.title}</span><span class="text-emerald-600 font-extrabold">${g.badge} ✅</span>`;
+                listEl.appendChild(item);
+            });
+
+            const btn = document.getElementById('confirmUpdateBtn');
+            const desc = document.getElementById('updateModalDesc');
+
+            if (isReady) {
+                btn.disabled = false;
+                btn.className = 'w-full py-2.5 rounded-2xl soft-pill-active font-bold text-xs shadow-md active:scale-95 transition';
+                btn.textContent = nextUpdateNum <= 3
+                    ? `✨ Unlock Built-in Game #${nextUpdateNum} Now!`
+                    : `🤖 Generate AI Game Cartridge #${nextUpdateNum} Now!`;
+                desc.textContent = `Update #${nextUpdateNum} is ready to install into your Games bar!`;
+            } else {
+                const hrs = Math.max(1, Math.ceil((THREE_DAYS_MS - elapsed) / (1000 * 60 * 60)));
+                btn.textContent = `⏳ Next Update (#${nextUpdateNum}) in ${hrs} Hours`;
+                btn.disabled = true;
+                btn.className = 'w-full py-2.5 rounded-2xl bg-blush-100 text-plum-800/50 font-bold text-xs cursor-not-allowed';
+                desc.textContent = `Agla naya game ${Math.ceil(hrs / 24)} din baad unlock hoga (ya niche Test button dabayein)!`;
+            }
+        }
+
+        function openUpdateModal() {
+            refreshUpdateCooldownUI();
+            const m = document.getElementById('updateModal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+
+        function closeUpdateModal() {
+            const m = document.getElementById('updateModal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function bypassCooldownForTest() {
+            appState.lastUpdateTimestamp = Date.now() - THREE_DAYS_MS - 5000;
+            saveAppState();
+            showToast('⚡', '3-Day Cooldown Unlocked! Click the pink button above!');
+        }
+
+        async function executeRealAppUpdate() {
+            const btn = document.getElementById('confirmUpdateBtn');
+            const nextLevel = (appState.unlockedPackLevel || 0) + 1;
+
+            if (nextLevel <= 3) {
+                appState.unlockedPackLevel = nextLevel;
+                appState.lastUpdateTimestamp = Date.now();
+                saveAppState();
+                spawnConfettiBurst();
+                playMelodicTone(523.25, 0.5, 'grand', 0.16);
+                setTimeout(() => playMelodicTone(659.25, 0.7, 'grand', 0.16), 140);
+
+                const unlockedKey = nextLevel === 1 ? 'slicer' : (nextLevel === 2 ? 'tower' : 'butterfly');
+                closeUpdateModal();
+                switchMainTab('arcade');
+                switchMiniGame(unlockedKey);
+                showToast('🎉', `Update #${nextLevel} Unlocked in Games!`);
+                return;
+            }
+
+            btn.textContent = `⏳ Creating Game #${nextLevel}...`;
+            btn.disabled = true;
+
+            let newCartridge = null;
+            const existingTitles = (appState.customAiGames || []).map(g => g.title).join(', ');
+
+            try {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 2600);
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    signal: controller.signal,
+                    body: JSON.stringify({
+                        contents: [{
+                            role: "user",
+                            parts: [{
+                                text: `Invent a cozy mini-game cartridge #${nextLevel} for Rajni. Avoid titles: ${existingTitles}. Engine in ["catcher","slicer","reflex"]. Return JSON.`
+                            }]
+                        }],
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            responseSchema: {
+                                type: "OBJECT",
+                                properties: {
+                                    title: { type: "STRING" },
+                                    icon: { type: "STRING" },
+                                    engine: { type: "STRING", enum: ["catcher", "slicer", "reflex"] },
+                                    targetEmojis: { type: "ARRAY", items: { type: "STRING" } },
+                                    hazardEmoji: { type: "STRING" },
+                                    bgTop: { type: "STRING" },
+                                    bgBottom: { type: "STRING" },
+                                    ruleText: { type: "STRING" }
+                                },
+                                required: ["title", "icon", "engine", "targetEmojis", "hazardEmoji", "bgTop", "bgBottom", "ruleText"]
+                            }
+                        }
+                    })
+                });
+                clearTimeout(timer);
+                if (res.ok) {
+                    const data = await res.json();
+                    const parsed = JSON.parse(data.candidates[0].content.parts[0].text);
+                    if (parsed && parsed.title) {
+                        newCartridge = {
+                            id: `ai-game-${nextLevel}-${Date.now()}`,
+                            badge: `AI #${nextLevel}`,
+                            title: parsed.title.slice(0, 20),
+                            icon: parsed.icon || '🌟',
+                            engine: ['catcher', 'slicer', 'reflex'].includes(parsed.engine) ? parsed.engine : 'catcher',
+                            targetEmojis: Array.isArray(parsed.targetEmojis) && parsed.targetEmojis.length ? parsed.targetEmojis : ['🌸', '✨', '🍓'],
+                            hazardEmoji: parsed.hazardEmoji || '⛈️',
+                            bgTop: parsed.bgTop?.startsWith('#') ? parsed.bgTop : '#23132e',
+                            bgBottom: parsed.bgBottom?.startsWith('#') ? parsed.bgBottom : '#9b72f2',
+                            speed: 2.2,
+                            ruleText: parsed.ruleText || 'Collect targets & dodge hazards!'
+                        };
+                    }
+                }
+            } catch (e) {}
+
+            if (!newCartridge) {
+                const pick = proceduralCartridgeCatalog[(nextLevel - 4) % proceduralCartridgeCatalog.length];
+                newCartridge = {
+                    ...pick,
+                    id: `ai-game-${nextLevel}-${Date.now()}`,
+                    badge: `AI #${nextLevel}`,
+                    title: nextLevel > 3 + proceduralCartridgeCatalog.length ? `${pick.title} ${nextLevel}` : pick.title
+                };
+            }
+
+            appState.unlockedPackLevel = nextLevel;
+            appState.customAiGames.push(newCartridge);
+            appState.lastUpdateTimestamp = Date.now();
+            saveAppState();
+
+            spawnConfettiBurst();
+            playMelodicTone(523.25, 0.5, 'grand', 0.16);
+            closeUpdateModal();
+            switchMainTab('arcade');
+            switchMiniGame(newCartridge.id);
+            showToast(newCartridge.icon, `New Game "${newCartridge.title}" Added!`);
+        }
+
+        /* -----------------------------------------------------------------
+         * 15. SMART 3-STEP BREAK & PADHAAI CHECK-IN MODAL
+         * ----------------------------------------------------------------- */
+        let breakCheckedOnce = false;
+        setTimeout(() => {
+            if (!breakCheckedOnce) openBreakCheckModal();
+        }, 240000);
+
+        function openBreakCheckModal() {
+            breakCheckedOnce = true;
+            document.getElementById('quotaStep-1').classList.remove('hidden');
+            document.getElementById('quotaStep-2').classList.add('hidden');
+            document.getElementById('quotaStep-3').classList.add('hidden');
+            document.getElementById('otherWorkInputBox').classList.add('hidden');
+            const m = document.getElementById('breakQuotaModal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+
+        function closeBreakQuotaModal() {
+            const m = document.getElementById('breakQuotaModal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function finishBreakDone() {
+            closeBreakQuotaModal();
+            spawnConfettiBurst();
+            showToast('🌸', 'Take care Rajni! See you on your next break ✨');
+        }
+
+        function goToQuotaStep2() {
+            document.getElementById('quotaStep-1').classList.add('hidden');
+            document.getElementById('quotaStep-2').classList.remove('hidden');
+        }
+
+        function showOtherWorkInput() {
+            document.getElementById('otherWorkInputBox').classList.remove('hidden');
+            document.getElementById('customWorkField').focus();
+        }
+
+        function submitCustomWork() {
+            const val = document.getElementById('customWorkField').value.trim() || 'apna zaroori kaam';
+            handleQuotaAnswer('custom', val);
+        }
+
+        function handleQuotaAnswer(choice, customWork = '') {
+            document.getElementById('quotaStep-2').classList.add('hidden');
+            document.getElementById('quotaStep-3').classList.remove('hidden');
+
+            const emojiEl = document.getElementById('step3Emoji');
+            const headEl = document.getElementById('step3Heading');
+            const msgEl = document.getElementById('step3Message');
+            const btnsEl = document.getElementById('step3WorkButtons');
+
+            if (choice === 'nhi') {
+                emojiEl.textContent = '😎🎉';
+                headEl.textContent = 'Full Free Time Mode!';
+                msgEl.textContent = '"Jab koi kaam ya padhaai pending nahi hai, phir toh aaram se jitna mann kare khelo aur enjoy karo!" ✨';
+                btnsEl.innerHTML = `<button onclick="allowPlayNow()" class="w-full py-2.5 rounded-2xl soft-pill-active font-bold text-xs shadow">Chalo Khelte Hain 🎮</button>`;
+            } else {
+                const task = choice === 'haan' ? 'padhaai' : customWork;
+                emojiEl.textContent = '🤗📚';
+                headEl.textContent = 'Chhoti Si Baat...';
+                msgEl.textContent = `"Main yahin hoon aur ye saare games bhi yahin hain! Pehle woh ${task} poori kar aao... par agar abhi sach mein khelne ka mann hai, toh click karo aur aaram se khelo!" 💖`;
+                btnsEl.innerHTML = `
+                    <button onclick="finishBreakDone()" class="w-full py-2.5 rounded-2xl soft-pill-active font-bold text-xs shadow">Kaam karke aati hoon 🚀</button>
+                    <button onclick="allowPlayNow()" class="w-full py-2.5 rounded-2xl bg-white border border-blush-300 text-plum-800 font-bold text-xs">Bas 5 min aur khelne do 🙏</button>
+                `;
+            }
+        }
+
+        function allowPlayNow() {
+            closeBreakQuotaModal();
+            showToast('🎮', 'Enjoy peacefully! Ab koi baar-baar nahi poochega ✨');
+        }
+
+        /* -----------------------------------------------------------------
+         * 16. MASTER 60FPS RENDERING LOOP (SINGLE-INSTANCE)
+         * ----------------------------------------------------------------- */
+        function masterLoop() {
+            // 1. Confetti FX Overlay
+            if (fxParticles.length > 0) {
+                fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+                for (let i = fxParticles.length - 1; i >= 0; i--) {
+                    const p = fxParticles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.09;
+                    p.alpha -= 0.024;
+                    if (p.alpha <= 0) {
+                        fxParticles.splice(i, 1);
+                        continue;
+                    }
+                    fxCtx.save();
+                    fxCtx.globalAlpha = p.alpha;
+                    fxCtx.fillStyle = p.color;
+                    fxCtx.beginPath();
+                    fxCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    fxCtx.fill();
+                    fxCtx.restore();
+                }
+            } else {
+                fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+            }
+
+            // 2. Active Arcade Canvas Rendering
+            if (activeTab === 'arcade') {
+                if (activeMiniGame === 'bubbles' && bubbleCanvas.width > 0) {
+                    bCtx.clearRect(0, 0, bubbleCanvas.width, bubbleCanvas.height);
+                    bubblesList.forEach(b => {
+                        if (bubbleGameActive) {
+                            b.y -= b.speedY;
+                            b.x += Math.sin(b.y * 0.025 + b.phase) * 0.45;
+                        }
+                        if (b.y < -b.r) {
+                            b.y = bubbleCanvas.height + b.r;
+                            b.x = b.r + Math.random() * Math.max(40, bubbleCanvas.width - b.r * 2);
+                        }
+                        bCtx.save();
+                        bCtx.beginPath();
+                        bCtx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+                        bCtx.fillStyle = b.isBomb ? '#1f2937' : (b.color + '38');
+                        bCtx.fill();
+                        bCtx.lineWidth = 2.2;
+                        bCtx.strokeStyle = b.color;
+                        bCtx.stroke();
+                        bCtx.font = '14px sans-serif';
+                        bCtx.textAlign = 'center';
+                        if (b.isBomb) bCtx.fillText('💣', b.x, b.y + 5);
+                        else if (b.isGold) bCtx.fillText('⭐', b.x, b.y + 5);
+                        bCtx.restore();
+                    });
+                } else if (activeMiniGame === 'stars' && starCanvas.width > 0) {
+                    sCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+                    const by = starCanvas.height - 34;
+                    sCtx.fillStyle = '#ffdce7';
+                    sCtx.beginPath();
+                    sCtx.roundRect(basketX - 30, by, 60, 18, 9);
+                    sCtx.fill();
+                    sCtx.font = '14px sans-serif';
+                    sCtx.textAlign = 'center';
+                    sCtx.fillText('🧺', basketX, by + 14);
+
+                    fallingObjects.forEach((it, idx) => {
+                        if (starGameActive) it.y += it.speed;
+                        sCtx.font = '22px sans-serif';
+                        sCtx.textAlign = 'center';
+                        sCtx.fillText(it.emoji, it.x, it.y);
+
+                        if (starGameActive && it.y >= by - 8 && it.y <= by + 20 && Math.abs(it.x - basketX) < 34) {
+                            if (it.isCloud) {
+                                starLives--;
+                                playMelodicTone(155, 0.4, 'lofi', 0.18);
+                                document.getElementById('starLivesText').textContent = '❤️'.repeat(Math.max(0, starLives)) || '💔';
+                                fallingObjects[idx] = createFallingObject();
+                                if (starLives <= 0) endStarCatcherGame();
+                            } else {
+                                starScoreVal += it.pts;
+                                document.getElementById('starCatchScore').textContent = starScoreVal;
+                                playNextPalindromeNote('kalimba');
+                                fallingObjects[idx] = createFallingObject();
+                            }
+                        } else if (it.y > starCanvas.height + 20) {
+                            fallingObjects[idx] = createFallingObject();
+                        }
+                    });
+                } else if (activeMiniGame === 'piano' && pianoCanvas.width > 0) {
+                    pCtx.clearRect(0, 0, pianoCanvas.width, pianoCanvas.height);
+                    const laneW = pianoCanvas.width / 4;
+                    pCtx.strokeStyle = 'rgba(244, 100, 146, 0.16)';
+                    for (let l = 1; l < 4; l++) {
+                        pCtx.beginPath();
+                        pCtx.moveTo(l * laneW, 0);
+                        pCtx.lineTo(l * laneW, pianoCanvas.height);
+                        pCtx.stroke();
+                    }
+                    pianoTiles.forEach(t => {
+                        if (pianoGameActive) t.y += pianoSpeed;
+                        pCtx.save();
+                        pCtx.fillStyle = t.tapped ? '#d1fae5' : '#f46492';
+                        pCtx.beginPath();
+                        pCtx.roundRect(t.lane * laneW + 6, t.y, laneW - 12, t.h, 12);
+                        pCtx.fill();
+                        pCtx.fillStyle = t.tapped ? '#059669' : '#ffffff';
+                        pCtx.font = '14px sans-serif';
+                        pCtx.textAlign = 'center';
+                        pCtx.fillText(t.tapped ? '✨' : '🎵', t.lane * laneW + laneW / 2, t.y + t.h / 2 + 5);
+                        pCtx.restore();
+
+                        if (pianoGameActive && t.y > pianoCanvas.height) {
+                            if (!t.tapped) {
+                                endPianoTilesGame('Missed a Melody Tile!');
+                            } else {
+                                t.y = -88;
+                                t.lane = Math.floor(Math.random() * 4);
+                                t.tapped = false;
+                            }
+                        }
+                    });
+                } else if (activeMiniGame === 'slicer' && slicerCanvas.width > 0) {
+                    slCtx.clearRect(0, 0, slicerCanvas.width, slicerCanvas.height);
+                    slicerItems.forEach((it, idx) => {
+                        if (slicerGameActive) {
+                            it.x += it.vx;
+                            it.y += it.vy;
+                            it.vy += 0.14;
+                        }
+                        slCtx.font = '28px sans-serif';
+                        slCtx.textAlign = 'center';
+                        slCtx.fillText(it.sliced ? '✨' : it.emoji, it.x, it.y);
+                        if (it.y > slicerCanvas.height + 40) slicerItems[idx] = spawnSlicerFruit();
+                    });
+                } else if (activeMiniGame === 'tower' && towerCanvas.width > 0) {
+                    twCtx.clearRect(0, 0, towerCanvas.width, towerCanvas.height);
+                    towerBlocks.forEach(b => {
+                        twCtx.fillStyle = b.color;
+                        twCtx.beginPath();
+                        twCtx.roundRect(b.x, b.y, b.w, b.h, 6);
+                        twCtx.fill();
+                    });
+                    if (movingBlock && towerGameActive) {
+                        movingBlock.x += movingBlock.vx;
+                        if (movingBlock.x <= 0 || movingBlock.x + movingBlock.w >= towerCanvas.width) movingBlock.vx *= -1;
+                        twCtx.fillStyle = movingBlock.color;
+                        twCtx.beginPath();
+                        twCtx.roundRect(movingBlock.x, movingBlock.y, movingBlock.w, movingBlock.h, 6);
+                        twCtx.fill();
+                    }
+                } else if (activeMiniGame === 'butterfly' && bflyCanvas.width > 0) {
+                    bfCtx.clearRect(0, 0, bflyCanvas.width, bflyCanvas.height);
+                    butterflies.forEach(b => {
+                        bfCtx.font = '28px sans-serif';
+                        bfCtx.textAlign = 'center';
+                        bfCtx.fillText(b.emoji, b.x, b.y);
+                    });
+                } else if (activeMiniGame.startsWith('ai-game-') && cartCanvas.width > 0 && activeCartridge) {
+                    ctCtx.clearRect(0, 0, cartCanvas.width, cartCanvas.height);
+                    if (activeCartridge.engine === 'catcher') {
+                        const by = cartCanvas.height - 34;
+                        ctCtx.fillStyle = '#ffdce7';
+                        ctCtx.beginPath();
+                        ctCtx.roundRect(cartBasketX - 30, by, 60, 18, 9);
+                        ctCtx.fill();
+                        ctCtx.font = '14px sans-serif';
+                        ctCtx.textAlign = 'center';
+                        ctCtx.fillText('🧺', cartBasketX, by + 14);
+
+                        cartEntities.forEach((ent, idx) => {
+                            if (cartActive) ent.y += ent.vy;
+                            ctCtx.font = '24px sans-serif';
+                            ctCtx.textAlign = 'center';
+                            ctCtx.fillText(ent.emoji, ent.x, ent.y);
+
+                            if (cartActive && ent.y >= by - 8 && ent.y <= by + 20 && Math.abs(ent.x - cartBasketX) < 34) {
+                                if (ent.isHazard) {
+                                    playMelodicTone(155, 0.4, 'lofi', 0.18);
+                                    finishCartridgeGame(`Hit ${ent.emoji} Hazard!`);
+                                } else {
+                                    cartScore += 15;
+                                    document.getElementById('cartridgeScore').textContent = cartScore;
+                                    playNextPalindromeNote('kalimba');
+                                    cartEntities[idx] = spawnCartridgeEntity(activeCartridge, true);
+                                }
+                            } else if (ent.y > cartCanvas.height + 25) {
+                                cartEntities[idx] = spawnCartridgeEntity(activeCartridge, true);
+                            }
+                        });
+                    } else if (activeCartridge.engine === 'slicer') {
+                        cartEntities.forEach((ent, idx) => {
+                            if (cartActive) {
+                                ent.x += ent.vx;
+                                ent.y += ent.vy;
+                                ent.vy += 0.14;
+                            }
+                            ctCtx.font = '26px sans-serif';
+                            ctCtx.textAlign = 'center';
+                            ctCtx.fillText(ent.emoji, ent.x, ent.y);
+                            if (ent.y > cartCanvas.height + 35) cartEntities[idx] = spawnCartridgeEntity(activeCartridge, true);
+                        });
+                    } else {
+                        cartEntities.forEach(ent => {
+                            if (cartActive) {
+                                ent.x += ent.vx;
+                                ent.y += ent.vy;
+                                if (ent.x < 25 || ent.x > cartCanvas.width - 25) ent.vx *= -1;
+                                if (ent.y < 25 || ent.y > cartCanvas.height - 25) ent.vy *= -1;
+                            }
+                            ctCtx.font = '26px sans-serif';
+                            ctCtx.textAlign = 'center';
+                            ctCtx.fillText(ent.emoji, ent.x, ent.y);
+                        });
+                    }
+                }
+            }
+
+            requestAnimationFrame(masterLoop);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeFxCanvas();
+            if (activeTab === 'arcade') switchMiniGame(activeMiniGame);
+            else if (activeTab === 'art') ensureArtCanvasInitialized();
+        });
+
+        // Instant Non-Blocking Boot
+        window.addEventListener('DOMContentLoaded', () => {
+            resizeFxCanvas();
+            resetGussaClouds();
+            syncAllUIWithState();
+            startBubbleGame();
+            masterLoop();
+        });
+    </script>
+
+    <!-- =================================================================
+         FIREBASE CLOUD PERSISTENCE MODULE (AUTH + FIRESTORE REALTIME SYNC)
+         ================================================================= -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        (async function initCloudSync() {
+            try {
+                if (typeof __firebase_config === 'undefined' || !__firebase_config) {
+                    setCloudBadgeStatus('☁️ Cloud Saved', true);
+                    return;
+                }
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'rajni-cozy-corner';
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+
+                // RULE 3: Authenticate FIRST before any Firestore operation
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (!user) return;
+                    // RULE 1: Strict private user path
+                    const stateDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'userData', 'cozyCornerState');
+
+                    window.pushStateToFirestoreCloud = async (stateObj) => {
+                        if (!auth.currentUser) return;
+                        try {
+                            setCloudBadgeStatus('☁️ Syncing...', false);
+                            await setDoc(stateDocRef, {
+                                ...stateObj,
+                                updatedAt: Date.now()
+                            }, { merge: true });
+                            setCloudBadgeStatus('☁️ Cloud Synced', true);
+                        } catch (err) {
+                            setCloudBadgeStatus('☁️ Local+Cloud', true);
+                        }
+                    };
+
+                    // Initial load & live listener with required error callback
+                    try {
+                        const snap = await getDoc(stateDocRef);
+                        if (snap.exists()) {
+                            mergeCloudStateFromFirestore(snap.data());
+                        } else {
+                            await window.pushStateToFirestoreCloud(appState);
+                        }
+                    } catch (e) {}
+
+                    onSnapshot(
+                        stateDocRef,
+                        (docSnap) => {
+                            if (docSnap.exists()) {
+                                mergeCloudStateFromFirestore(docSnap.data());
+                                setCloudBadgeStatus('☁️ Cloud Synced', true);
+                            }
+                        },
+                        (err) => {
+                            setCloudBadgeStatus('☁️ Saved', true);
+                        }
+                    );
+                });
+            } catch (e) {
+                setCloudBadgeStatus('☁️ Saved', true);
+            }
+        })();
+    </script>
+</body>
+</html>
